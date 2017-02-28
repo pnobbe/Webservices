@@ -1,21 +1,33 @@
 {
-  "name": "Bookstore",
-  "version": "0.0.0",
+  "name": "restrace",
+  "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
+  "description": "RESTrace API",
+  "keywords": [],
+  "author": "Marius de  Vogel & Patrick Nobbe",
+  "license": "",
+  "main": "app.js",
   "dependencies": {
     "async": "*",
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
-    "express": "^4.11.2",
     "mongoose": "^4.7.8",
     "morgan": "~1.7.0",
     "pug": "^2.0.0-beta8",
     "q": "^1.4.1",
     "serve-favicon": "~2.3.2",
-    "underscore": "*"
+    "underscore": "*",
+    "express": "^4.12.3",
+	"swagger": "^0.7.5",
+    "swagger-express-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "swagger project test"
   }
 }
