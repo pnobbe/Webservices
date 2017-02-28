@@ -1,5 +1,3 @@
-'use strict';
-
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -10,15 +8,16 @@ var SwaggerExpress = require('swagger-express-mw');
 
 // Data Access Layer
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/bookstore');
-mongoose.Promise = require('q').Promise;
-//mongoose.Promise = global.Promise;
 
+mongoose.connect('mongodb://localhost:27017/kroegentocht');
+//mongoose.Promise = require('q').Promise;
+mongoose.Promise = global.Promise;
 // /Data Access Layer
 
 // Models
-require('./models/book');
-require('./models/author');
+require('./models/user');
+require('./models/waypoint');
+require('./models/race');
 require('./models/fillTestData')();
 
 /*function handleError(req, res, statusCode, message){
@@ -57,9 +56,22 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', require('./routes/index'));
+//app.use('/books', require('./routes/books')(handleError));
+//app.use('/authors', require('./routes/authors')(handleError));
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// error handlers
 
 // development error handler
 // will print stacktrace
