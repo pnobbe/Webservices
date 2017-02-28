@@ -20,13 +20,8 @@ mongoose.Promise = require('q').Promise;
 require('./models/book');
 require('./models/author');
 require('./models/fillTestData')();
-// /Models
 
-var config = {
-    appRoot: __dirname // required config
-};
-
-function handleError(req, res, statusCode, message){
+/*function handleError(req, res, statusCode, message){
     console.log();
     console.log('-------- Error handled --------');
     console.log('Request Params: ' + JSON.stringify(req.params));
@@ -35,7 +30,7 @@ function handleError(req, res, statusCode, message){
     console.log('-------- /Error handled --------');
     res.status(statusCode);
     res.json(message);
-};
+}*/
 
 var app = express();
 
@@ -65,5 +60,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
 
 module.exports = app; // for testing
