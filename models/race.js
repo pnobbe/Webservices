@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Waypoint = mongoose.model('Waypoint');
-console.log('Iniializing races schema');
+console.log('Initializing races schema');
 
 var raceSchema = new mongoose.Schema({
         owner: {

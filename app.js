@@ -20,7 +20,7 @@ require('./models/waypoint');
 require('./models/race');
 require('./models/fillTestData')();
 
-/*function handleError(req, res, statusCode, message){
+function handleError(req, res, statusCode, message){
     console.log();
     console.log('-------- Error handled --------');
     console.log('Request Params: ' + JSON.stringify(req.params));
@@ -29,7 +29,7 @@ require('./models/fillTestData')();
     console.log('-------- /Error handled --------');
     res.status(statusCode);
     res.json(message);
-}*/
+}
 
 var app = express();
 
@@ -61,7 +61,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', require('./routes/index'));
-//app.use('/books', require('./routes/books')(handleError));
+app.use('/users', require('./routes/users')(handleError));
 //app.use('/authors', require('./routes/authors')(handleError));
 
 // catch 404 and forward to error handler

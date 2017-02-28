@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-console.log('Iniializing user schema');
+console.log('Initializing user schema');
 
 var userSchema = new mongoose.Schema({
     name: {type: String, required: true},

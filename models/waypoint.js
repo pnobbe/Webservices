@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-console.log('Iniializing waypoint schema');
+console.log('Initializing waypoint schema');
 
 var waypointSchema = new mongoose.Schema({
     id: {type: String, required: true, index: true},
