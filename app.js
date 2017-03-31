@@ -15,10 +15,10 @@ mongoose.Promise = global.Promise;
 // /Data Access Layer
 
 // Models
-require('./models/user');
-require('./models/waypoint');
-require('./models/race');
-require('./models/fillTestData')();
+require('./models/api/user');
+require('./models/api/waypoint');
+require('./models/api/race');
+require('./models/api/fillTestData')();
 
 function handleError(req, res, statusCode, message){
     console.log();
@@ -53,6 +53,8 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
         console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
     }
 });
+
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

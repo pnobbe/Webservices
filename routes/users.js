@@ -7,20 +7,19 @@ var async = require('async');
 var mongoose = require('mongoose');
 User = mongoose.model('User');
 
-function getUsers(req, res){
-	var query = {};
-	if(req.params.id){
-		query._id = req.params.id.toLowerCase();
-	}
+function getUsers(req, res) {
+    var query = {};
+    if (req.params.id) {
+        query._id = req.params.id.toLowerCase();
+    }
 
-	User.find(query)
-		.then(data => {
-			if(req.params.id){
-				data = data[0];
-			}
+    User.find(query).then(data => {
+        if (req.params.id) {
+            data = data[0];
+    }
 
-   res.json(data);
-		}).fail(err => handleError(req, res, 500, err));
+    res.json(data);
+
 }
 
 // Routing

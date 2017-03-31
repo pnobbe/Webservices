@@ -59,4 +59,4 @@ raceSchema.virtual('isActive').get(function () {
     return false;
 });
 
-var race = mongoose.model('Race', raceSchema);
+var Race = mongoose.model('Race', raceSchema);

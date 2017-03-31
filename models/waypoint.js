@@ -16,4 +16,4 @@ waypointSchema.set('toJSON', {virtuals: true});
 waypointSchema.set('toObject', {virtuals: true});
 
 
-var waypoint = mongoose.model('Waypoint', waypointSchema);
+var Waypoint = mongoose.model('Waypoint', waypointSchema);

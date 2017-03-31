@@ -26,4 +26,4 @@ userSchema.statics.findByRole = function (inputRole, cb) {
     return this.find({role: inputRole}, cb);
 };
 
-var user = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema);
