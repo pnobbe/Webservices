@@ -8,6 +8,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
+var ip = require("ip");
 var app = express();
 
 /**
@@ -20,7 +21,7 @@ var swaggerDefinition = {
         version: '0.0.1',
         description: 'The official ReST-Race API',
     },
-    host: '127.0.0.1:3000',
+    host: ip.address() + ':3000',
     basePath: '/',
 };
 
