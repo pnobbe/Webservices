@@ -1,16 +1,89 @@
 'use strict';
 
-const SwaggerExpress = require('swagger-express-mw');
-const app = require('express')();
+var express = require('express');
+var swaggerJSDoc = require('swagger-jsdoc');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var routes = require('./routes/index');
+var app = express();
 
-const express = require('express');
-const path = require('path');
-const favicon = require('serve-favicon');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+/**
+ * Swagger
+ */
 
-module.exports = app; // for testing
+var swaggerDefinition = {
+    info: {
+        title: 'ReST Race API',
+        version: '0.0.1',
+        description: 'The official ReST-Race API',
+    },
+    host: '127.0.0.1:3000',
+    basePath: '/',
+};
+
+// options for the swagger docs
+var options = {
+    // import swaggerDefinitions
+    swaggerDefinition: swaggerDefinition,
+    // path to the API docs
+    apis: ['./routes/*.js'],
+};
+
+// initialize swagger-jsdoc
+var swaggerSpec = swaggerJSDoc(options);// serve swagger
+
+app.get('/swagger.json', function(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+// uncomment after placing your favicon in /public
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+/**
+ * Error Handlers
+ */
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status( err.code || 500 )
+            .json({
+                status: 'error',
+                message: err
+            });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500)
+        .json({
+            status: 'error',
+            message: err.message
+        });
+});
 
 const config = {
     appRoot: __dirname // required config
@@ -33,35 +106,26 @@ require('./models/waypoint');
 require('./models/race');
 require('./models/fillTestData')();
 
+
 /**
- * Swagger
+ * Routing
  */
 
-SwaggerExpress.create(config, function (err, swaggerExpress) {
-    if (err) {
-        throw err;
-    }
+var index = require('./routes/index.js');
+var users = require('./routes/users.js');
 
-    // Install middleware
-    swaggerExpress.register(app);
 
-    // Serve the Swagger documents and Swagger UI
-    app.use(swaggerExpress.runner.swaggerTools.swaggerUi());
-
-    var port = process.env.PORT || 10010;
-    app.listen(port);
-
-    console.log('Go here for documentation: \nlocalhost:' + port + '/docs');
-
-});
+app.use("/", index);
+app.use("/users", users);
 
 /**
  * Sockets
  */
 
+/*
 // Run server to listen on port 3000.
-const server = app.listen(3000, () => {
-    console.log('Sockets listening on *:3000');
+const server = app.listen(3001, () => {
+    console.log('Sockets listening on *:3001');
 });
 
 const io = require('socket.io')(server);
@@ -77,3 +141,6 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
 });
+*/
+
+module.exports = app; // for testing
