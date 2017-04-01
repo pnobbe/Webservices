@@ -71,9 +71,10 @@
 <script src="./swagger-ui-standalone-preset.js"> </script>
 <script>
 window.onload = function() {
-  // Build a system
+
+    // Build a system
   const ui = SwaggerUIBundle({
-    url: "http://localhost:3000/swagger.json",
+    url: "http://" + window.location.hostname + ":" + window.location.port + "/swagger.json",
     dom_id: '#swagger-ui',
     presets: [
       SwaggerUIBundle.presets.apis,

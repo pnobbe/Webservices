@@ -21,7 +21,7 @@ var swaggerDefinition = {
         version: '0.0.1',
         description: 'The official ReST-Race API',
     },
-    host: ip.address() + ':3000',
+    host: 'http://127.0.0.1:3000',
     basePath: '/',
 };
 
@@ -36,10 +36,7 @@ var options = {
 // initialize swagger-jsdoc
 var swaggerSpec = swaggerJSDoc(options);// serve swagger
 
-app.get('/swagger.json', function(req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -52,6 +49,69 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+/**
+ * NoSQL/Mongoose
+ */
+
+// Data Access Layer
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://user1:user1@ds147510.mlab.com:47510/kroegentocht');
+mongoose.Promise = require('q').Promise;
+//mongoose.Promise = global.Promise;
+
+// Models
+require('./models/user');
+require('./models/waypoint');
+require('./models/race');
+require('./models/fillTestData')();
+
+
+/**
+ * Sockets
+ */
+
+/*
+ // Run server to listen on port 3000.
+ const server = app.listen(3001, () => {
+ console.log('Sockets listening on *:3001');
+ });
+
+ const io = require('socket.io')(server);
+
+ app.use(bodyParser.urlencoded({ extended: false } ));
+ app.use(express.static('static'));
+
+ // Set socket.io listeners.
+ io.on('connection', (socket) => {
+ console.log('a user connected');
+
+ socket.on('disconnect', () => {
+ console.log('user disconnected');
+ });
+ });
+ */
+
+/**
+ * Routing
+ */
+
+var index = require('./routes/index');
+var users = require('./routes/users');
+
+app.use('/swagger.json', function(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
+app.use("/", index);
+app.use("/users", users);
+
+
+const config = {
+    appRoot: __dirname // required config
+};
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -85,63 +145,5 @@ app.use(function(err, req, res, next) {
             message: err.message
         });
 });
-
-const config = {
-    appRoot: __dirname // required config
-};
-
-/**
- * NoSQL/Mongoose
- */
-
-// Data Access Layer
-var mongoose = require('mongoose');
-
-mongoose.connect('mongodb://user1:user1@ds147510.mlab.com:47510/kroegentocht');
-mongoose.Promise = require('q').Promise;
-//mongoose.Promise = global.Promise;
-
-// Models
-require('./models/user');
-require('./models/waypoint');
-require('./models/race');
-require('./models/fillTestData')();
-
-
-/**
- * Routing
- */
-
-var index = require('./routes/index.js');
-var users = require('./routes/users.js');
-
-
-app.use("/", index);
-app.use("/users", users);
-
-/**
- * Sockets
- */
-
-/*
-// Run server to listen on port 3000.
-const server = app.listen(3001, () => {
-    console.log('Sockets listening on *:3001');
-});
-
-const io = require('socket.io')(server);
-
-app.use(bodyParser.urlencoded({ extended: false } ));
-app.use(express.static('static'));
-
-// Set socket.io listeners.
-io.on('connection', (socket) => {
-    console.log('a user connected');
-
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-});
-*/
 
 module.exports = app; // for testing
