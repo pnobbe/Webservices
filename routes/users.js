@@ -14,13 +14,15 @@ function getUsers(req, res) {
     }
 
     User.find(query).then(data => {
-        if (req.params.id) {
-            data = data[0];
-    }
+            if (req.params.id) {
+                data = data[0];
+            }
 
-    res.json(data);
+            res.json(data);
 
-}
+        }
+    )
+};
 
 // Routing
 router.route('/')
@@ -33,4 +35,4 @@ module.exports = function (errCallback) {
 
     handleError = errCallback;
     return router;
-};
+}
