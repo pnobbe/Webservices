@@ -1,32 +1,32 @@
 'use strict';
 
-var express = require('express');
-var swaggerJSDoc = require('swagger-jsdoc');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var routes = require('./routes/index');
-var ip = require("ip");
-var app = express();
+const express = require('express');
+const swaggerJSDoc = require('swagger-jsdoc');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const routes = require('./routes/index');
+const os = require("os");
+const app = express();
 
 /**
  * Swagger
  */
 
-var swaggerDefinition = {
+const swaggerDefinition = {
     info: {
         title: 'ReST Race API',
         version: '0.0.1',
         description: 'The official ReST-Race API',
     },
-    host: 'http://127.0.0.1:3000',
+    host: os.hostname(),
     basePath: '/',
 };
 
 // options for the swagger docs
-var options = {
+const options = {
     // import swaggerDefinitions
     swaggerDefinition: swaggerDefinition,
     // path to the API docs
@@ -34,9 +34,7 @@ var options = {
 };
 
 // initialize swagger-jsdoc
-var swaggerSpec = swaggerJSDoc(options);// serve swagger
-
-
+const swaggerSpec = swaggerJSDoc(options);// serve swagger
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -55,7 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 
 // Data Access Layer
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://user1:user1@ds147510.mlab.com:47510/kroegentocht');
 mongoose.Promise = require('q').Promise;
@@ -97,16 +95,16 @@ require('./models/fillTestData')();
  * Routing
  */
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+const indexRouter = require('./routes/index');
+const apiRouter = require('./routes/api');
 
 app.use('/swagger.json', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
 });
 
-app.use("/", index);
-app.use("/users", users);
+app.use("/", indexRouter);
+app.use("/api", apiRouter);
 
 
 const config = {

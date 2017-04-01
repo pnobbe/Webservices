@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
 /**
  * @swagger
@@ -33,10 +33,12 @@ var User = mongoose.model('User');
  *           $ref: '#/definitions/User'
  */
 router.get('/', function(req, res){
-    User.find({})
+    res.send("hello user");
+    /*User.find({})
         .then(data => {
             res.status(200).send(data);
         }).fail(res.status(204).send());
+        */
 });
 
 // POST save a user
@@ -105,7 +107,7 @@ router.post('/', function(req, res){
  *         schema:
  *           $ref: '#/definitions/User'
  */
-router.get('/{name}', function(req, res){
+router.get('/:name', function(req, res){
     var query = {};
     console.log(req.params);
     if (req.params.name) {
@@ -144,7 +146,7 @@ router.get('/{name}', function(req, res){
  *       200:
  *         description: Successfully updated
  */
-router.get('/{name}', function(req, res){
+router.get('/:name', function(req, res){
     //put
 });
 
@@ -167,27 +169,9 @@ router.get('/{name}', function(req, res){
  *       200:
  *         description: Successfully deleted
  */
-router.get('/{name}', function(req, res){
+router.get('/:name', function(req, res){
     //delete
 });
-
-
-function update(req, res, next) {
-    if (db.update(req.swagger.params.id.value, req.body)) {
-        res.json({success: 1, description: "User has been updated!"});
-    } else {
-        res.status(204).send();
-    }
-}
-
-function remove(req, res, next) {
-    if (db.remove(req.swagger.params.id.value)) {
-        res.json({success: 1, description: "User removed successfully."});
-    }
-    else {
-        res.status(204).send();
-    }
-}
 
 //export this router to use in our index.js
 module.exports = router;
