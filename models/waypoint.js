@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-console.log('Initializing waypoint schema');
+console.log('Creating waypoint schema');
 
-var waypointSchema = new mongoose.Schema({
+const waypointSchema = new mongoose.Schema({
     id: {type: String, required: true, index: true},
     name: {type: String, required: true},
     // can be collected from the API :D
@@ -16,4 +16,4 @@ waypointSchema.set('toJSON', {virtuals: true});
 waypointSchema.set('toObject', {virtuals: true});
 
 
-var Waypoint = mongoose.model('Waypoint', waypointSchema);
+const Waypoint = mongoose.model('Waypoint', waypointSchema);

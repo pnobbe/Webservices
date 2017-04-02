@@ -8,7 +8,7 @@ const Waypoint = mongoose.model('Waypoint');
 
 /**
  * @swagger
- * definition:
+ * definitions:
  *   Waypoint:
  *     properties:
  *       name:

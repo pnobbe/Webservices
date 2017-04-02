@@ -6,7 +6,7 @@ const User = mongoose.model('User');
 
 /**
  * @swagger
- * definition:
+ * definitions:
  *   User:
  *     properties:
  *       name:
@@ -88,7 +88,7 @@ router.post('/', function(req, res){
 
 /**
  * @swagger
- * /{name}:
+ * /:name:
  *   get:
  *     tags:
  *       - Users
@@ -129,7 +129,7 @@ router.get('/:name', function(req, res){
 
 /**
  * @swagger
- * /{name}:
+ * /:name:
  *   put:
  *     tags:
  *      - Users
@@ -140,7 +140,7 @@ router.get('/:name', function(req, res){
  *       in: body
  *       description: Fields for the User resource
  *       schema:
- *         type: array
+ *         type: object
  *         $ref: '#/definitions/User'
  *     responses:
  *       200:
@@ -152,7 +152,7 @@ router.get('/:name', function(req, res){
 
 /**
  * @swagger
- * /{name}:
+ * /:name:
  *   delete:
  *     tags:
  *       - Users

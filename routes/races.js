@@ -1,14 +1,14 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var mongoose = require('mongoose');
-var Race = mongoose.model('Race');
+const mongoose = require('mongoose');
+const Race = mongoose.model('Race');
 
 /**
  * @swagger
- * definition:
+ * definitions:
  *   Race:
  *     properties:
  *       name:
