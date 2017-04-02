@@ -118,15 +118,14 @@ console.log("Done.");
 
 console.log("Initializing Passport... ");
 
-require('./passport/init')(passport); // pass passport for configuration
+//const origin = require('./config/origin')(app);
+require('./config/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
 app.use(session({secret: 'GerardJolingIsEenBaas'})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
-// Initialize Passport
 
 
 console.log("Done.");
@@ -144,7 +143,6 @@ app.use('/swagger.json', function (req, res) {
 });
 
 require('./routes/index')(app, passport); // load our routes and pass in our app and fully configured passport
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -164,10 +162,7 @@ console.log("Done.");
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.code || 500)
-            .json({
-                status: 'error',
-                message: err
-            });
+            .send(err.message);
     });
 }
 
