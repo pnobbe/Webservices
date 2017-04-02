@@ -7,7 +7,7 @@
 const express = require('express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const path = require('path');
-const morgan       = require('morgan');
+const morgan = require('morgan');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -16,9 +16,9 @@ const app = express();
 
 const mongoose = require('mongoose');
 const passport = require('passport');
-const flash    = require('connect-flash');
+const flash = require('connect-flash');
 
-const session      = require('express-session');
+const session = require('express-session');
 const configDB = require('./config/db');
 
 
@@ -89,26 +89,30 @@ console.log("Done.");
 
 console.log("Opening sockets... ");
 
-/*
- // Run server to listen on port 3000.
- const server = app.listen(3001, () => {
- console.log('Sockets listening on *:3001');
- });
+// Run server to listen on port 3001.
+const server = app.listen(3001, () => {
+    console.log('Sockets listening on *:3001');
+});
 
- const io = require('socket.io')(server);
+const io = require('socket.io')(server);
 
- app.use(bodyParser.urlencoded({ extended: false } ));
- app.use(express.static('static'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static('static'));
 
- // Set socket.io listeners.
- io.on('connection', (socket) => {
- console.log('a user connected');
+let connectedClients = 0;
 
- socket.on('disconnect', () => {
- console.log('user disconnected');
- });
- });
- */
+// Set socket.io listeners.
+io.on('connection', (socket) => {
+    connectedClients++;
+    console.log('SOCKET.IO: Client connected. Total clients: ' + connectedClients);
+
+    socket.broadcast.emit('new_client', { id: socket.id, count: connectedClients });
+
+    socket.on('disconnect', () => {
+        connectedClients--;
+        console.log('SOCKET.IO: Client disconnected. Total clients: ' + connectedClients);
+    });
+});
 
 console.log("Done.");
 
@@ -122,7 +126,7 @@ console.log("Initializing Passport... ");
 require('./config/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
-app.use(session({secret: 'GerardJolingIsEenBaas'})); // session secret
+app.use(session({secret: 'GerardJolingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session

@@ -47,18 +47,6 @@ module.exports = function (app, passport) {
     const authRoutes = require('./auth')(app, passport);
     app.use('/auth', authRoutes);
 
-    /**
-     * CONNECT (ALREAY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT)
-     */
-    const connectRoutes = require('./connect')(app, passport);
-    app.use('/connect', connectRoutes);
-
-    /**
-     * UNLINK (ALREAY LOGGED IN / UNLINKING OTHER SOCIAL ACCOUNT)
-     */
-    const unlinkRoutes = require('./unlink')(app, passport);
-    app.use('/unlink', unlinkRoutes);
-
 
     /**
      * PROFILE
@@ -66,8 +54,10 @@ module.exports = function (app, passport) {
     // We will want this protected so you have to be logged in to visit
     // We will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function (req, res) {
+        let displayName = (req.user.name != null) ? req.user.name : req.user.email;
         res.render('profile.ejs', {
-            user: req.user // get the user out of session and pass to template
+            user: req.user,// get the user out of session and pass to template
+            displayname: displayName
         });
     });
 
