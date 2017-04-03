@@ -75,8 +75,8 @@ describe('Waypoints', function () {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
                             res.body.should.have.property('message');
-                            res.body.waypoint.waypoint.should.have.property('id');
-                            res.body.waypoint.waypoint.should.have.property('name');
+                            res.body.waypoint.should.have.property('id');
+                            res.body.waypoint.should.have.property('name');
                             res.body.waypoint.should.have.property('address');
                             res.body.waypoint.should.have.property('lat');
                             res.body.waypoint.should.have.property('lng');
@@ -98,8 +98,8 @@ describe('Waypoints', function () {
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
-                            res.body.waypoint.should.have.property('id').eql(waypoint.id);
-                            res.body.waypoint.should.have.property('name').eql(waypoint.name);
+                            res.body.should.have.property('id').eql(waypoint.id);
+                            res.body.should.have.property('name').eql(waypoint.name);
                             res.body.should.have.property('address');
                             res.body.should.have.property('lat');
                             res.body.should.have.property('lng');
@@ -138,8 +138,8 @@ describe('Waypoints', function () {
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
-                            res.body.waypoint.should.have.property('id').eql(waypoint.id);
-                            res.body.waypoint.should.have.property('name').eql(waypoint.name);
+                            res.body.should.have.property('id').eql(waypoint.id);
+                            res.body.should.have.property('name').eql(waypoint.name);
                             res.body.should.have.property('address');
                             res.body.should.have.property('lat');
                             res.body.should.have.property('lng');

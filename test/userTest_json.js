@@ -79,7 +79,6 @@ describe('User', function () {
                             res.body.should.have.property('message').eql('User has been created successfully.');
                             res.body.user.should.have.property('name');
                             res.body.user.should.have.property('email');
-                            res.body.user.local.should.have.property('password');
                             done();
                         });
                 });
@@ -119,7 +118,11 @@ describe('User', function () {
         });
         describe('/PUT/:email user', () => {
             it('it should PUT a user by the given email', (done) => {
-                let user = new usermodel({email: "Rickyrick@wabbalabbadubdub.com", password: "C-137", name: "Rick"});
+                let user = new usermodel({
+                    email: "Rickyrick@wabbalabbadubdub.com",
+                    password: "C-137",
+                    name: "Rick"
+                });
                 user.save((err, user) => {
                     var e = user.email;
                     user.email = "Morty@Scared.com";
@@ -131,7 +134,7 @@ describe('User', function () {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
                             res.body.should.have.property('email').eql(user.email);
-                            res.body.should.have.property('name');
+                            res.body.should.have.property('name').eql(user.name);
                             done();
                         });
                 });

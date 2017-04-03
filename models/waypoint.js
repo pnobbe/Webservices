@@ -29,6 +29,24 @@ waypointSchema.statics.findById = function (id, cb) {
     });
 };
 
+waypointSchema.statics.findAll = function (callback) {
+
+    return this.find({}).exec(function (errors, data) {
+
+        if (errors) {
+            cb(errors, data);
+        }
+        else {
+            const Places = require('../service/places');
+            let p = new Places();
+            return p.waypointsToCoordinates(data).then(newData => {
+                callback(errors, newData);
+            });
+        }
+
+    });
+}
+
 waypointSchema.statics.deleteWaypoint = function (id, done) {
     if (!id) {
         return done("Missing input data.", false);
@@ -75,6 +93,7 @@ waypointSchema.statics.updateWaypoint = function (id, body, done) {
     ;
 }
 ;
+
 
 waypointSchema.statics.createNew = function (body, done) {
 

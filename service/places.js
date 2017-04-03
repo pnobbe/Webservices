@@ -131,7 +131,10 @@ module.exports = class Places {
         var promises = waypoints.map(waypoint => {
             return self.getDetail(waypoint.id).then(data => {
 
-                console.log(data.body.result.geometry.location.lat);
+                if (data == null || data.body == null || data.body.result == null) {
+                    return {waypoint: waypoint};
+                }
+
                 var o =
                 {
                     waypoint: waypoint,

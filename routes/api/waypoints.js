@@ -41,7 +41,7 @@ const Waypoint = mongoose.model('Waypoint');
  */
 router.get('/', function (req, res, next) {
 
-    Waypoint.find({}, function (errors, data) {
+    Waypoint.findAll(function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -49,14 +49,35 @@ router.get('/', function (req, res, next) {
         else {
             res.format({
                 json: function () {
-                    res.status(200).send(data);
+                    res.status(200).send(data.map(el => {
+                        if (el.lat) {
+                            return {
+                                id: el.waypoint.id,
+                                name: el.waypoint.name,
+                                address: el.address,
+                                lat: el.lat,
+                                lng: el.lng
+                            };
+                        }
+                        return {id: el.waypoint.id, name: el.waypoint.name};
+                    }));
                 },
                 html: function () {
-                    let resp = "";
+                    let resp = "<div>";
                     data.forEach(function (data) {
-                        resp += "<p>" + data.name + "</p>"
+                        resp += "<div>";
+                        resp += "<h3>" + data.waypoint.name + "</h3>";
+                        resp += "<h2>" + data.waypoint.id + "</h2>";
+
+                        if (el.lat) {
+                            resp += "<h3>" + data.address + "</h3>";
+                            resp += "<h4 class='LAT'>" + data.lat + "</h4>";
+                            resp += "<h4 class='LNG'>" + data.lng + "</h4>";
+                        }
+                        resp += "</div>";
                     });
-                    res.status(200).send('<div>' + res + '</div>');
+                    resp += "</div>";
+                    res.status(200).send(resp);
                 }
             });
         }
@@ -99,19 +120,36 @@ router.post('/', function (req, res, next) {
         }
         else {
             res.format({
-                html: function () {
-                    res.status(200).send('<p> Waypoint has been created successfully. </p>');
-                },
+                    html: function () {
+                        res.status(200).send('<p> Waypoint has been created successfully. </p>');
+                    },
 
-                json: function () {
-                    res.status(200).send({message: "Waypoint has been created successfully.", waypoint: waypoint});
+                    json: function () {
+
+                        var obj = {
+                            id: waypoint.waypoint.id,
+                            name: waypoint.waypoint.name
+
+                        };
+
+                        if (waypoint.lat) {
+                            obj.address = waypoint.address;
+                            obj.lat = waypoint.lat;
+                            obj.lng = waypoint.lng;
+                        }
+
+
+                        res.status(200).send({message: "Waypoint has been created successfully.", waypoint: obj});
+                    }
                 }
-            })
+            )
         }
-    });
+    })
+    ;
 
 
-});
+})
+;
 
 /**
  * @swagger
@@ -154,7 +192,20 @@ router.get('/:id', function (req, res) {
             json: function () {
                 console.log("json");
                 if (waypoint) {
-                    res.status(200).send(waypoint);
+
+                    var obj = {
+                        id: waypoint.waypoint.id,
+                        name: waypoint.waypoint.name
+
+                    };
+
+                    if (waypoint.lat) {
+                        obj.address = waypoint.address;
+                        obj.lat = waypoint.lat;
+                        obj.lng = waypoint.lng;
+                    }
+                    res.status(200).send(obj);
+
                 } else {
                     res.status(400).send({error: "No waypoint found with that id."});
                 }
@@ -162,7 +213,18 @@ router.get('/:id', function (req, res) {
             html: function () {
                 console.log("html");
                 if (user) {
-                    res.status(200).send('<h1>' + waypoint.name + '</h1>');
+                    var resp = "";
+                    resp += "<div>";
+
+                    resp += "<h2>" + waypoint.waypoint.id + "</h2>";
+                    resp += "<h2>" + waypoint.waypoint.name + "</h2>";
+                    if (el.lat) {
+                        resp += "<h3>" + data.address + "</h3>";
+                        resp += "<h4 class='LAT'>" + waypoint.lat + "</h4>";
+                        resp += "<h4 class='LNG'>" + waypoint.lng + "</h4>";
+                    }
+                    resp += "</div>";
+                    res.status(200).send('resp');
                 } else {
                     res.status(400).send('<strong>No waypoint found with that id. </strong>');
                 }
@@ -171,7 +233,8 @@ router.get('/:id', function (req, res) {
     });
 
 
-});
+})
+;
 
 /**
  * @swagger
@@ -200,19 +263,43 @@ router.put('/:id', function (req, res) {
         res.status(400).send({error: "An error occurred"});
     }
     // Call User.update
-    Waypoint.updateWaypoint(id, req.body, function (message, success) {
+    Waypoint.updateWaypoint(id, req.body, function (message, waypoint) {
 
-        if (!success) {
+        if (!waypoint) {
             res.status(400).send({error: message});
         }
         else {
             res.format({
-                html: function () {
-                    res.status(200).send('<p> success.name</p>');
-                },
-
                 json: function () {
-                    res.status(200).send(success);
+                    var obj = {
+                        id: waypoint.waypoint.id,
+                        name: waypoint.waypoint.name
+
+                    };
+
+                    if (waypoint.lat) {
+                        obj.address = waypoint.address;
+                        obj.lat = waypoint.lat;
+                        obj.lng = waypoint.lng;
+                    }
+                    res.status(200).send(obj);
+
+                },
+                html: function () {
+
+                    var resp = "";
+                    resp += "<div>";
+
+                    resp += "<h2>" + waypoint.waypoint.id + "</h2>";
+                    resp += "<h2>" + waypoint.waypoint.name + "</h2>";
+                    if (el.lat) {
+                        resp += "<h3>" + waypoint.address + "</h3>";
+                        resp += "<h4 class='LAT'>" + waypoint.lat + "</h4>";
+                        resp += "<h4 class='LNG'>" + waypoint.lng + "</h4>";
+                    }
+                    resp += "</div>";
+                    res.status(200).send('resp');
+
                 }
             })
         }

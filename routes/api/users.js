@@ -48,14 +48,20 @@ router.get('/', function (req, res, next) {
         else {
             res.format({
                 json: function () {
-                    res.status(200).send(data);
+                    res.status(200).send(data.map(el => {
+                        return {name: el.name, email: el.email};
+                    }));
                 },
                 html: function () {
-                    let resp = "";
+                    let resp = "<div>";
                     data.forEach(function (data) {
-                        resp += "<p>" + data.email + "</p>"
+                        resp += "<div>";
+                        resp += "<h2>" + data.name + "</h2>";
+                        resp += "<h4>" + data.email + "</h4>";
+                        resp += "</div>";
                     });
-                    res.status(200).send('<div>' + res + '</div>');
+                    resp += "</div>";
+                    res.status(200).send(resp);
                 }
             });
         }
@@ -152,14 +158,20 @@ router.get('/:email', function (req, res) {
         res.format({
             json: function () {
                 if (user) {
-                    res.status(200).send(user);
+                    res.status(200).send({name: user.name, email: user.email});
                 } else {
                     res.status(400).send({error: "No user found with that email."});
                 }
             }.bind(res),
             html: function () {
                 if (user) {
-                    res.status(200).send('<h1>' + user.name + '</h1>');
+                    var resp = "";
+                    resp += "<div>";
+                    resp += "<h2>" + user.name + "</h2>";
+                    resp += "<h4>" + user.email + "</h4>";
+                    resp += "</div>";
+
+                    res.status(200).send(resp);
                 } else {
                     res.status(400).send('<strong>No user found with that email. </strong>');
                 }
@@ -205,11 +217,15 @@ router.put('/:email', function (req, res) {
         else {
             res.format({
                 html: function () {
-                    res.status(200).send('<p> success.name</p>');
+                    var resp = "";
+                    resp += "<div>";
+                    resp += "<h2>" + success.name + "</h2>";
+                    resp += "<h4>" + success.email + "</h4>";
+                    resp += "</div>";
+                    res.status(200).send(resp);
                 },
-
                 json: function () {
-                    res.status(200).send(success);
+                    res.status(200).send({name: success.name, email: success.email});
                 }
             })
         }
