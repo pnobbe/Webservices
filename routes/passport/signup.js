@@ -71,7 +71,7 @@ module.exports = function (passport) {
 
             // asynchronous
             process.nextTick(() => {
-                User.createNewFaceboo(token, profile, done);
+                User.createNewFacebook(token, profile, done);
             });
 
         }));
