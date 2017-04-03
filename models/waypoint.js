@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 console.log('Creating waypoint schema');
 
 const waypointSchema = new mongoose.Schema({
-    id: {type: String, required: true, index: true},
+    id: {type: String, required: true, index: true, unique: true},
     name: {type: String, required: true},
     // API!
     //coordinates: {

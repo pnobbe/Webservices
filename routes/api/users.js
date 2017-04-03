@@ -99,11 +99,11 @@ router.post('/', function (req, res, next) {
         else {
             res.format({
                 html: function () {
-                    res.status(200).send('<p> User has been successfully created. </p>');
+                    res.status(200).send('<p> User has been created successfully. </p>');
                 },
 
                 json: function () {
-                    res.status(200).send({message: "User has been successfully created."});
+                    res.status(200).send({message: "User has been created successfully."});
                 }
             })
         }
@@ -174,14 +174,14 @@ router.get('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:name:
+ * /users/:email:
  *   put:
  *     tags:
  *      - Users
  *     description: Updates a single user
  *     produces: application/json
  *     parameters:
- *       name: user
+ *       email: user
  *       in: body
  *       description: Fields for the User resource
  *       schema:
@@ -191,39 +191,30 @@ router.get('/:email', function (req, res) {
  *       200:
  *         description: Successfully updated
  */
-router.put('/:name', function (req, res) {
-    var name;
-    if (req.params.name || req.body) {
-        name = req.params.name;
+router.put('/:email', function (req, res) {
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
     } else {
         res.status(204).send();
     }
+    // Call User.update
+    User.updateUser(email, req.body, function (message, success) {
 
-    User.findByName(name, function (errors, data) {
-
-        if (errors) {
-            res.status(500).send("An error occurred.");
+        if (!success) {
+            res.status(500).send(message);
         }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> Successfully updated. </p>');
+                },
 
-        let user = data[0];
-        res.format({
-            json: function () {
-                console.log("json");
-                if (user) {
-                    res.status(200).send("Successfully updated.");
-                } else {
-                    res.status(404).send({message: "No user found with that name. "});
+                json: function () {
+                    res.status(200).send({message: "Successfully updated."});
                 }
-            }.bind(res),
-            html: function () {
-                console.log("html");
-                if (user) {
-                    res.status(200).send('<h1> Successfully updated. </h1>');
-                } else {
-                    res.status(404).send('<strong> No user found with that name. </strong>');
-                }
-            }
-        });
+            })
+        }
     });
 });
 

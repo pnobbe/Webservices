@@ -4,7 +4,7 @@ var Waypoint = mongoose.model('Waypoint');
 console.log('Creating races schema');
 
 var raceSchema = new mongoose.Schema({
-    name: {type: String, required: true, index: true},
+    name: {type: String, required: true, index: true, unique: true},
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -6,7 +6,7 @@ console.log('Creating user schema');
 const userSchema = new mongoose.Schema({
 
     name: {type: String, required: true},
-    email: {type: String, required: true, index: true},
+    email: {type: String, required: true, index: true, unique: true},
     local: {
         name: String,
         email: String,
@@ -37,7 +37,7 @@ userSchema.set('toJSON', {virtuals: true});
 userSchema.set('toObject', {virtuals: true});
 
 // generating a hash
-userSchema.static.generateHash = function (password) {
+userSchema.statics.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
@@ -46,16 +46,52 @@ userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.local.password);
 };
 
+userSchema.statics.updateUser = function (email, body, done) {
+    console.log("Reached");
+    if (!email) {
+        return done("Missing input data.", false);
+    }
+
+    this.findOne({'email': email}, function (err, user) {
+
+
+        console.log(user);
+        // if there are any errors, return the error
+        if (err)
+            return done(err, false);
+
+        // return info without creating user
+        if (!user)
+            return done("user does not exist", false);
+
+        if (body.name) {
+            user.name = body.name;
+        }
+        if (body.password && user.local.password) {
+            user.local.password = (mongoose.model('User', userSchema)).generateHash(body.password);
+        }
+        if (body.email) {
+            user.email = body.email;
+        }
+
+        user.save(function (err) {
+            if (err)
+                return done("Error while saving", false);
+
+            return done(null, true);
+        });
+    });
+};
+
 userSchema.statics.createNewLocal = function (body, done) {
 
-    if(!body.email || !body.name || !body.password)
-    {
+    if (!body.email || !body.name || !body.password) {
         return done(null, false, "Missing input data.");
     }
 
 //  Whether we're signing up or connecting an account, we'll need
     //  to know if the email address is in use.
-    this.findOne({'local.email': body.email}, function (err, existingUser) {
+    this.findOne({'email': body.email}, function (err, existingUser) {
 
         // if there are any errors, return the error
         if (err)
@@ -70,7 +106,7 @@ userSchema.statics.createNewLocal = function (body, done) {
 
         newUser.local.name = body.name;
         newUser.local.email = body.email;
-        newUser.local.password = newUser.generateHash(body.password);
+        newUser.local.password = (mongoose.model('User', userSchema)).generateHash(body.password);
 
         newUser.name = body.name;
         newUser.email = body.email; // pull the first email;
@@ -86,7 +122,7 @@ userSchema.statics.createNewLocal = function (body, done) {
 
 userSchema.statics.createNewGoogle = function (token, profile, done) {
 // try to find the user based on their google id
-    this.findOne({'google.id': profile.id}, function (err, user) {
+    this.findOne({$or: [{'google.id': profile.id}, {'email': profile.emails[0].value}]}, function (err, user) {
         if (err)
             return done(err);
 
@@ -116,7 +152,7 @@ userSchema.statics.createNewGoogle = function (token, profile, done) {
 };
 
 userSchema.statics.createNewFacebook = function (token, profile, done) {
-    this.findOne({'facebook.id': profile.id}, function (err, user) {
+    this.findOne({$or: [{'facebook.id': profile.id}, {'email': profile.emails[0].value}]}, function (err, user) {
         if (err)
             return done(err);
 
