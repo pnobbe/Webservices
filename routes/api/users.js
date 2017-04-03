@@ -9,17 +9,22 @@ const User = mongoose.model('User');
  * definitions:
  *   User:
  *     properties:
- *       name:
- *         type: string
  *       email:
+ *         type: string
+ *       name:
  *         type: string
  *       password:
  *         type: string
+ *     required:
+ *      - email
+ *      - name
+ *      - password
+ *
  */
 
 /**
  * @swagger
- * /api/users/:
+ * /users/:
  *   get:
  *     tags:
  *       - Users
@@ -34,25 +39,33 @@ const User = mongoose.model('User');
  *           $ref: '#/definitions/User'
  */
 router.get('/', function (req, res, next) {
-    res.format({
-        json: function () {
-            res.send({message: 'Hello user'});
-        },
-        html: function () {
-            res.send('<h1>Hello user</h1>');
+
+    User.find({}, function (errors, data) {
+
+        if (errors) {
+            res.status(204).send();
+        }
+        else {
+            res.format({
+                json: function () {
+                    res.status(200).send(data);
+                },
+                html: function () {
+                    let resp = "";
+                    data.forEach(function (data) {
+                        resp += "<p>" + data.email + "</p>"
+                    });
+                    res.status(200).send('<div>' + res + '</div>');
+                }
+            });
         }
     });
-    /*User.find({})
-     .then(data => {
-     res.status(200).send(data);
-     }).fail(res.status(204).send());
-     */
+
 });
 
-// POST save a user
 /**
  * @swagger
- * /api/users/:
+ * /users/:
  *   post:
  *     tags:
  *       - Users
@@ -70,33 +83,38 @@ router.get('/', function (req, res, next) {
  *       200:
  *         description: Successfully created
  *       500:
- *         description: User
+ *         description: An error occurred.
  */
-router.post('/', function (req, res) {
-    var user1 = new User();
-    user1.name = req.body.name;
-    user1.email = req.body.email;
+router.post('/', function (req, res, next) {
 
-    user1.save(function (err) {
-        if (err) {
-            res.json({success: 0, description: err.message})
+    // Call User.create
+    User.createNewLocal(req.body, function (errors, user, info) {
+
+        if (errors) {
+            res.status(500).send("An error occurred");
         }
-        ;
-        res.format({
-            'text/html': function () {
-                return res.status(200).send('<html><body><h1>Success</h1></body></html>');
-            },
+        else if (info) {
+            res.status(500).send(info);
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> User has been successfully created. </p>');
+                },
 
-            'application/json': function () {
-                res.status(200).send(user1);
-            }
-        })
-    })
+                json: function () {
+                    res.status(200).send({message: "User has been successfully created."});
+                }
+            })
+        }
+    });
+
+
 });
 
 /**
  * @swagger
- * /api/users/:email:
+ * /users/:email:
  *   get:
  *     tags:
  *       - Users
@@ -156,7 +174,7 @@ router.get('/:email', function (req, res) {
 
 /**
  * @swagger
- * /api/users/:name:
+ * /users/:name:
  *   put:
  *     tags:
  *      - Users
@@ -211,7 +229,7 @@ router.put('/:name', function (req, res) {
 
 /**
  * @swagger
- * /api/users/:name:
+ * /users/:name:
  *   delete:
  *     tags:
  *       - Users

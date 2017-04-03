@@ -23,7 +23,7 @@ const configDB = require('./config/db');
 
 const config = {
     appRoot: __dirname, // required config
-    appOrigin: "http://localhost:3000" // "https://restracer.herokuapp.com"
+    appOrigin: "127.0.0.1:3000" // "https://restracer.herokuapp.com"
 };
 
 /**
@@ -37,7 +37,8 @@ const swaggerDefinition = {
         description: 'The official ReST-Race API',
     },
     host: config.appOrigin,
-    basePath: '/',
+    basePath: '/api',
+    produces: ["application/json", "text/html" ],
 };
 
 // options for the swagger docs
@@ -123,10 +124,10 @@ console.log("Done.");
 console.log("Initializing Passport... ");
 
 //const origin = require('./config/origin')(app);
-require('./config/passport/init')(passport); // pass passport for configuration
+require('./routes/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
-app.use(session({secret: 'GerardJolatingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
+app.use(session({secret: 'GerardJolingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
