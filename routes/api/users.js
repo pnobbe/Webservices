@@ -3,7 +3,6 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const io = req.app.get('io');
 
 
 /**
@@ -41,6 +40,7 @@ const io = req.app.get('io');
  *           $ref: '#/definitions/User'
  */
 router.get('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     User.find({}, function (errors, data) {
 
@@ -89,6 +89,7 @@ router.get('/', function (req, res, next) {
  *         description: An error occurred.
  */
 router.post('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     // Call User.create
     User.createNewLocal(req.body, function (errors, user, info) {
@@ -141,6 +142,8 @@ router.post('/', function (req, res, next) {
  *           $ref: '#/definitions/User'
  */
 router.get('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
@@ -196,6 +199,8 @@ router.get('/:email', function (req, res) {
  *         description: Updated user
  */
 router.put('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
@@ -210,7 +215,7 @@ router.put('/:email', function (req, res) {
         }
         else {
 
-            io.emit('update_user', { email: email, body: body });
+            io.emit('update_user', { email: email, body: req.body });
 
             res.format({
                 html: function () {
@@ -245,6 +250,8 @@ router.put('/:email', function (req, res) {
  *         description: Successfully deleted
  */
 router.delete('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
