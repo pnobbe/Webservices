@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
     connectedClients++;
     console.log('SOCKET.IO: Client connected. Total clients: ' + connectedClients);
 
-    socket.broadcast.emit('new_client', { id: socket.id, count: connectedClients });
+    socket.broadcast.emit('new_client', {id: socket.id, count: connectedClients});
 
     socket.on('disconnect', () => {
         connectedClients--;

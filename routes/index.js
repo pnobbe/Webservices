@@ -1,5 +1,14 @@
 module.exports = function (app, passport) {
 
+    /*
+     HOW TO USE API:
+     var Places = require('../service/places');
+     var place = new Places();
+     place.getNearbyLocationsbyCity("Den Bosch, Netherlands").then(data => {
+     console.log(data);
+     });
+     */
+
     /**
      * HOME PAGE
      */
@@ -10,7 +19,7 @@ module.exports = function (app, passport) {
     /**
      * LOGIN
      */
-    // show the login form
+        // show the login form
     app.get('/login', function (req, res) {
 
         // render the page and pass in any flash data if it exists
@@ -27,7 +36,7 @@ module.exports = function (app, passport) {
     /**
      * SIGNUP
      */
-    // show the signup form
+        // show the signup form
     app.get('/signup', function (req, res) {
 
         // render the page and pass in any flash data if it exists
@@ -51,8 +60,8 @@ module.exports = function (app, passport) {
     /**
      * PROFILE
      */
-    // We will want this protected so you have to be logged in to visit
-    // We will use route middleware to verify this (the isLoggedIn function)
+        // We will want this protected so you have to be logged in to visit
+        // We will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function (req, res) {
         let displayName = (req.user.name != null) ? req.user.name : req.user.email;
         res.render('profile.ejs', {
