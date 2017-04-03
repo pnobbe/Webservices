@@ -29,6 +29,13 @@ module.exports = class Places {
         });
     }
 
+    getDetail(place_ID) {
+        let params = {
+            placeid: 'place_ID'
+        };
+        return this.places.details(params);
+    }
+
     getNearby(lat, lng, search) {
         var self = this;
         const params = {
@@ -105,6 +112,24 @@ module.exports = class Places {
         else {
             return [];
         }
+    }
+
+    waypointsToCoordinates(waypoints) {
+
+        var self = this;
+        if (!Array.isArray(waypoints)) {
+            return new Promise((resolve) => {
+                resolve([]);
+            });
+        }
+
+        // create promises
+        var promises = waypoints.map(waypoint => {
+            return self.getDetail(waypoint.id).then(data => {
+                return {waypoint: waypoint, lat: data.geometry.location.lat, lng: data.geometry.location.lng};
+            })
+        });
+        return Promise.all(promises);
     }
 
 };
