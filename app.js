@@ -70,8 +70,8 @@ console.log("Initializing Mongoose... ");
 
 // Data Access Layer
 mongoose.connect(configDB.url);
-//mongoose.Promise = require('q').Promise;
-mongoose.Promise = global.Promise;
+mongoose.Promise = require('q').Promise;
+//mongoose.Promise = global.Promise;
 
 // Models
 require('./models/user');
