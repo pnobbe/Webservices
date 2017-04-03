@@ -4,59 +4,128 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Waypoint = mongoose.model('Waypoint');
 
+
 /**
  * @swagger
  * definitions:
  *   Waypoint:
  *     properties:
+ *       email:
+ *         type: string
  *       name:
  *         type: string
+ *       password:
+ *         type: string
+ *     required:
+ *      - email
+ *      - name
+ *      - password
+ *
  */
 
 /**
  * @swagger
- * /api/waypoints/:
+ * /waypoints/:
  *   get:
  *     tags:
- *       - Waypoints
- *     description: Returns all waypoints
- *     produces:
+ *       - Users
+ *     description: Returns all users
+ *     accepts:
  *       - application/json
  *       - text/html
  *     responses:
  *       200:
- *         description: An array of waypoints
+ *         description: An array of users
  *         schema:
  *           $ref: '#/definitions/Waypoint'
  */
-router.get('/', function(req, res){
-    res.format({
-        json: function(){
-            res.send({ message: 'Hello waypoint' });
-        },
-        html: function(){
-            res.send('<h1>Hello waypoint</h1>');
+router.get('/', function (req, res, next) {
+
+    Waypoint.find({}, function (errors, data) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred"});
+        }
+        else {
+            res.format({
+                json: function () {
+                    res.status(200).send(data);
+                },
+                html: function () {
+                    let resp = "";
+                    data.forEach(function (data) {
+                        resp += "<p>" + data.name + "</p>"
+                    });
+                    res.status(200).send('<div>' + res + '</div>');
+                }
+            });
         }
     });
-});
 
-// GET all movies
-function list(req, res, next) {
-    res.json({movies: db.find()});
-}
+});
 
 /**
  * @swagger
- * /api/waypoints/:name:
+ * /waypoints/:
+ *   post:
+ *     tags:
+ *       - Waypoints
+ *     description: Creates a new waypoint
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: Waypoint
+ *         description: Waypoint object
+ *         in: body
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/Waypoint'
+ *     responses:
+ *       200:
+ *         description: Successfully created
+ *       500:
+ *         description: An error occurred.
+ */
+router.post('/', function (req, res, next) {
+
+    // Call User.create
+    Waypoint.createNew(req.body, function (errors, waypoint, info) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred"});
+        }
+        else if (info) {
+            res.status(400).send({error: info});
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> Waypoint has been created successfully. </p>');
+                },
+
+                json: function () {
+                    res.status(200).send({message: "Waypoint has been created successfully.", waypoint: waypoint});
+                }
+            })
+        }
+    });
+
+
+});
+
+/**
+ * @swagger
+ * /waypoints/:id:
  *   get:
  *     tags:
  *       - Waypoints
  *     description: Returns a single waypoint
- *     produces:
+ *     accepts:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - name: name
- *         description: Waypoint's name
+ *       - name: id
+ *         description: Waypoint's id
  *         in: path
  *         required: true
  *         type: string
@@ -66,39 +135,135 @@ function list(req, res, next) {
  *         schema:
  *           $ref: '#/definitions/Waypoint'
  */
-function get(req, res, next) {
-    var movie = db.find(req.swagger.params.id.value);
-    if (movie) {
-        res.json(movie);
-    }
-    else {
-        res.status(204).send();
-    }
-}
-
-// POST save a movie
-function save(req, res, next) {
-    res.json({success: db.save(req.body), description: "Movie added to the list"});
-}
-
-// PUT update a movie
-function update(req, res, next) {
-    if (db.update(req.swagger.params.id.value, req.body)) {
-        res.json({success: 1, description: "Movie has been updated!"});
+router.get('/:id', function (req, res) {
+    var id;
+    if (req.params.id) {
+        id = req.params.id;
     } else {
-        res.status(204).send();
+        res.status(400).send({error: "An error occurred"});
     }
-}
 
-// DEL delete a movie
-function remove(req, res, next) {
-    if (db.remove(req.swagger.params.id.value)) {
-        res.json({success: 1, description: "Movie removed successfully."});
+    Waypoint.findById(id, function (errors, data) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred"});
+        }
+
+        let waypoint = data;
+        res.format({
+            json: function () {
+                console.log("json");
+                if (waypoint) {
+                    res.status(200).send(waypoint);
+                } else {
+                    res.status(400).send({error: "No waypoint found with that id."});
+                }
+            }.bind(res),
+            html: function () {
+                console.log("html");
+                if (user) {
+                    res.status(200).send('<h1>' + waypoint.name + '</h1>');
+                } else {
+                    res.status(400).send('<strong>No waypoint found with that id. </strong>');
+                }
+            }
+        });
+    });
+
+
+});
+
+/**
+ * @swagger
+ * /waypoints/:id:
+ *   put:
+ *     tags:
+ *      - Waypoints
+ *     description: Updates a single waypoint
+ *     produces: application/json
+ *     parameters:
+ *       id: waypoint
+ *       in: body
+ *       description: Fields for the waypoint resource
+ *       schema:
+ *         type: object
+ *         $ref: '#/definitions/Waypoint'
+ *     responses:
+ *       200:
+ *         description: Updated waypoint
+ */
+router.put('/:id', function (req, res) {
+    var id;
+    if (req.params.id) {
+        id = req.params.id;
+    } else {
+        res.status(400).send({error: "An error occurred"});
     }
-    else {
-        res.status(204).send();
+    // Call User.update
+    Waypoint.updateWaypoint(id, req.body, function (message, success) {
+
+        if (!success) {
+            res.status(400).send({error: message});
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> success.name</p>');
+                },
+
+                json: function () {
+                    res.status(200).send(success);
+                }
+            })
+        }
+    });
+});
+
+/**
+ * @swagger
+ * /waypoints/:id:
+ *   delete:
+ *     tags:
+ *       - Waypoints
+ *     description: Deletes a single waypoint
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - id: waypoint
+ *         description: waypoint id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
+router.delete('/:id', function (req, res) {
+    var id;
+    if (req.params.id) {
+        id = req.params.id;
+    } else {
+        res.status(400).send({error: "An error occurred"});
     }
-}
+
+    Waypoint.deleteWaypoint(id, function (errors) {
+
+        if (errors) {
+            res.status(400).send({error: "Error deleting " + id});
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> Deleted succesfully </p>');
+                },
+
+                json: function () {
+                    res.status(200).send({message: "Deleted succesfully"});
+                }
+            })
+        }
+    });
+});
 
 //export this router to use in our index.js
 module.exports = router;

@@ -31,7 +31,7 @@ module.exports = class Places {
 
     getDetail(place_ID) {
         let params = {
-            placeid: 'place_ID'
+            placeid: place_ID
         };
         return this.places.details(params);
     }
@@ -105,8 +105,12 @@ module.exports = class Places {
                 let waypoint = new Waypoint();
                 waypoint.id = element.place_id;
                 waypoint.name = element.name;
-                waypoint.address = element.vicinity;
-                return {waypoint: waypoint, lat: element.geometry.location.lat, lng: element.geometry.location.lng};
+                return {
+                    waypoint: waypoint,
+                    lat: element.geometry.location.lat,
+                    lng: element.geometry.location.lng,
+                    address: element.vicinity
+                };
             });
         }
         else {
@@ -126,7 +130,16 @@ module.exports = class Places {
         // create promises
         var promises = waypoints.map(waypoint => {
             return self.getDetail(waypoint.id).then(data => {
-                return {waypoint: waypoint, lat: data.geometry.location.lat, lng: data.geometry.location.lng};
+
+                console.log(data.body.result.geometry.location.lat);
+                var o =
+                {
+                    waypoint: waypoint,
+                    lat: data.body.result.geometry.location.lat,
+                    lng: data.body.result.geometry.location.lng,
+                    address: data.body.result.vicinity
+                };
+                return o;
             })
         });
         return Promise.all(promises);

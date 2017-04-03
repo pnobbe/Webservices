@@ -43,7 +43,7 @@ router.get('/', function (req, res, next) {
     User.find({}, function (errors, data) {
 
         if (errors) {
-            res.status(204).send();
+            res.status(400).send({error: "An error occurred"});
         }
         else {
             res.format({
@@ -91,10 +91,10 @@ router.post('/', function (req, res, next) {
     User.createNewLocal(req.body, function (errors, user, info) {
 
         if (errors) {
-            res.status(500).send("An error occurred");
+            res.status(400).send({error: "An error occurred"});
         }
         else if (info) {
-            res.status(500).send(info);
+            res.status(400).send({error: info});
         }
         else {
             res.format({
@@ -103,7 +103,7 @@ router.post('/', function (req, res, next) {
                 },
 
                 json: function () {
-                    res.status(200).send({message: "User has been created successfully."});
+                    res.status(200).send({message: "User has been created successfully.", user: user});
                 }
             })
         }
@@ -139,31 +139,29 @@ router.get('/:email', function (req, res) {
     if (req.params.email) {
         email = req.params.email;
     } else {
-        res.status(204).send();
+        res.status(400).send({error: "An error occurred"});
     }
 
     User.findByEmail(email, function (errors, data) {
 
         if (errors) {
-            res.status(500).send("An error occurred.");
+            res.status(400).send({error: "An error occurred."});
         }
 
         let user = data[0];
         res.format({
             json: function () {
-                console.log("json");
                 if (user) {
                     res.status(200).send(user);
                 } else {
-                    res.status(404).send({message: "No user found with that email. "});
+                    res.status(400).send({error: "No user found with that email."});
                 }
             }.bind(res),
             html: function () {
-                console.log("html");
                 if (user) {
                     res.status(200).send('<h1>' + user.name + '</h1>');
                 } else {
-                    res.status(404).send('<strong>No user found with that email. </strong>');
+                    res.status(400).send('<strong>No user found with that email. </strong>');
                 }
             }
         });
@@ -189,29 +187,29 @@ router.get('/:email', function (req, res) {
  *         $ref: '#/definitions/User'
  *     responses:
  *       200:
- *         description: Successfully updated
+ *         description: Updated user
  */
 router.put('/:email', function (req, res) {
     var email;
     if (req.params.email) {
         email = req.params.email;
     } else {
-        res.status(204).send();
+        res.status(400).send({error: "An error occurred"});
     }
     // Call User.update
     User.updateUser(email, req.body, function (message, success) {
 
         if (!success) {
-            res.status(500).send(message);
+            res.status(400).send({error: message});
         }
         else {
             res.format({
                 html: function () {
-                    res.status(200).send('<p> Successfully updated. </p>');
+                    res.status(200).send('<p> success.name</p>');
                 },
 
                 json: function () {
-                    res.status(200).send({message: "Successfully updated."});
+                    res.status(200).send(success);
                 }
             })
         }
@@ -228,7 +226,7 @@ router.put('/:email', function (req, res) {
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: name
+ *       - email: user
  *         description: User's id
  *         in: path
  *         required: true
@@ -237,8 +235,31 @@ router.put('/:email', function (req, res) {
  *       200:
  *         description: Successfully deleted
  */
-router.delete('/:name', function (req, res) {
-    //delete
+router.delete('/:email', function (req, res) {
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
+    } else {
+        res.status(400).send({error: "An error occurred"});
+    }
+
+    User.deleteUser(email, function (errors) {
+
+        if (errors) {
+            res.status(500).send("Error deleting " + email);
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> Deleted succesfully </p>');
+                },
+
+                json: function () {
+                    res.status(200).send({message: "Deleted succesfully"});
+                }
+            })
+        }
+    });
 });
 
 //export this router to use in our index.js

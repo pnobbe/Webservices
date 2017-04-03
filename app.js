@@ -38,7 +38,7 @@ const swaggerDefinition = {
     },
     host: config.appOrigin,
     basePath: '/api',
-    produces: ["application/json", "text/html" ],
+    produces: ["application/json", "text/html"],
 };
 
 // options for the swagger docs
@@ -71,7 +71,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 console.log("Initializing Mongoose... ");
 
 // Data Access Layer
-mongoose.connect(configDB.url);
+if (configDB.testing) {
+    mongoose.connect(configDB.test_url);
+    
+}
+else {
+    mongoose.connect(configDB.url);
+}
+
 mongoose.Promise = require('q').Promise;
 //mongoose.Promise = global.Promise;
 
@@ -79,7 +86,9 @@ mongoose.Promise = require('q').Promise;
 require('./models/user');
 require('./models/waypoint');
 require('./models/race');
-require('./models/fillTestData')();
+
+// require('./models/fillTestData')();
+
 
 console.log("Done.");
 

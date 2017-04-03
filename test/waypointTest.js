@@ -5,13 +5,13 @@ var expect = require('chai').expect;
 var should = require('chai').should();
 var mongoose = require('mongoose');
 const configDB = require('../config/db');
-var user;
-var usermodel;
+var waypoint;
+var waypointmodel;
 
 
 configDB.testing = true;
 var app = require('../app');
-usermodel = mongoose.model('User');
+waypointmodel = mongoose.model('Waypoint');
 chai.use(chaiHttp);
 // Data Access Layer
 
@@ -21,19 +21,19 @@ require('../models/user');
 require('../models/waypoint');
 require('../models/race');
 
-describe('User', function () {
+describe('Waypoints', function () {
 
 
     beforeEach((done) => { //Before each test we empty the database
-        usermodel.remove({}, (err) => {
+        waypointmodel.remove({}, (err) => {
             done();
         })
     });
     describe('JSON', function () {
-        describe('/GET user', () => {
-            it('it should GET all the users', (done) => {
+        describe('/GET waypoint', () => {
+            it('it should GET all the waypoints', (done) => {
                 chai.request(app)
-                    .get('/api/users')
+                    .get('/api/waypoints')
                     .set('content-type', 'application/json')
                     .set('accept', 'application/json')
                     .end((err, res) => {
@@ -44,17 +44,16 @@ describe('User', function () {
                     });
             });
         });
-        describe('/POST user', () => {
-            it('it should not POST a user without email', (done) => {
-                let user = {
-                    name: "Rick Sanchez",
-                    password: "123"
+        describe('/POST waypoint', () => {
+            it('it should not POST a waypoint without id', (done) => {
+                let waypoint = {
+                    name: 'Fitness-centrum Flash Gym',
                 };
                 chai.request(app)
-                    .post('/api/users')
+                    .post('/api/waypoints')
                     .set('content-type', 'application/json')
                     .set('accept', 'application/json')
-                    .send(user)
+                    .send(waypoint)
                     .end((err, res) => {
                         res.should.have.status(400);
                         res.body.should.be.a('object');
@@ -62,93 +61,102 @@ describe('User', function () {
                         done();
                     });
             }),
-                it('it should POST a user ', (done) => {
-                    let user = {
-                        name: "Rick Sanchez",
-                        password: "123",
-                        email: "Rickyrick@wabbalabbadubdub.com"
-                    }
+                it('it should POST a waypoint ', (done) => {
+                    let waypoint = {
+                        name: 'Fitness-centrum Flash Gym',
+                        id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
+                    };
                     chai.request(app)
-                        .post('/api/users')
+                        .post('/api/waypoints')
                         .set('content-type', 'application/json')
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
-                            res.body.should.have.property('message').eql('User has been created successfully.');
-                            res.body.user.should.have.property('name');
-                            res.body.user.should.have.property('email');
-                            res.body.user.local.should.have.property('password');
+                            res.body.should.have.property('message');
+                            res.body.waypoint.waypoint.should.have.property('id');
+                            res.body.waypoint.waypoint.should.have.property('name');
+                            res.body.waypoint.should.have.property('address');
+                            res.body.waypoint.should.have.property('lat');
+                            res.body.waypoint.should.have.property('lng');
                             done();
                         });
                 });
         });
-        describe('/GET/:email user', () => {
-            it('it should GET a user by the given email', (done) => {
-                let user = new usermodel({email: "Rickyrick@wabbalabbadubdub.com", password: "C-137", name: "Rick"});
-                user.save((err, user) => {
+        describe('/GET/:id waypoint', () => {
+            it('it should GET a waypoint by the given id', (done) => {
+                let waypoint = new waypointmodel({
+                    name: 'Fitness-centrum Flash Gym',
+                    id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
+                });
+                waypoint.save((err, user) => {
                     chai.request(app)
-                        .get('/api/users/' + user.email)
+                        .get('/api/waypoints/' + waypoint.id)
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
-                            res.body.should.have.property('email').eql(user.email);
-                            res.body.should.have.property('name');
+                            res.body.waypoint.should.have.property('id').eql(waypoint.id);
+                            res.body.waypoint.should.have.property('name').eql(waypoint.name);
+                            res.body.should.have.property('address');
+                            res.body.should.have.property('lat');
+                            res.body.should.have.property('lng');
                             done();
                         });
                 });
 
             }),
-                it('it should fail to get a user', (done) => {
+                it('it should fail to get a waypoint', (done) => {
                     chai.request(app)
-                        .get('/api/users/' + "Rickyrick@wabbalabbadubdub.com")
+                        .get('/api/waypoints/' + "7")
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(400);
                             res.body.should.be.a('object');
-                            res.body.should.have.property('error').eql("No user found with that email.");
+                            res.body.should.have.property('error').eql("No waypoint found with that id.");
                             done();
                         });
 
 
                 })
         });
-        describe('/PUT/:email user', () => {
-            it('it should PUT a user by the given email', (done) => {
-                let user = new usermodel({email: "Rickyrick@wabbalabbadubdub.com", password: "C-137", name: "Rick"});
-                user.save((err, user) => {
-                    var e = user.email;
-                    user.email = "Morty@Scared.com";
+        describe('/PUT/:id waypoint', () => {
+            it('it should PUT a waypoint by the given id', (done) => {
+                let waypoint = new waypointmodel({
+                    name: 'Fitness-centrum Flash Gym',
+                    id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
+                });
+                waypoint.save((err, waypoint) => {
+                    waypoint.name = "new Name";
                     chai.request(app)
-                        .put('/api/users/' + e)
+                        .put('/api/waypoints/' + waypoint.id)
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
-                            res.body.should.have.property('email').eql(user.email);
-                            res.body.should.have.property('name');
+                            res.body.waypoint.should.have.property('id').eql(waypoint.id);
+                            res.body.waypoint.should.have.property('name').eql(waypoint.name);
+                            res.body.should.have.property('address');
+                            res.body.should.have.property('lat');
+                            res.body.should.have.property('lng');
                             done();
                         });
                 });
 
             }),
-                it('it should fail to update a user', (done) => {
-                    let user = new usermodel({
-                        email: "Rickyrick@wabbalabbadubdub.com",
-                        password: "C-137",
-                        name: "Rick"
+                it('it should fail to update a waypoint', (done) => {
+                    let waypoint = new waypointmodel({
+                        name: 'Fitness-centrum Flash Gym',
+                        id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
                     });
-                    var e = user.email;
-                    user.email = "Morty@Scared.com";
                     chai.request(app)
-                        .put('/api/users/' + e)
+                        .put('/api/waypoints/' + waypoint.id)
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(400);
                             res.body.should.be.a('object');
@@ -157,20 +165,23 @@ describe('User', function () {
                         });
                 })
         });
-        describe('/DELETE/:email user', () => {
-            it('it should Delete a user by the given email', (done) => {
-                let user = new usermodel({email: "Rickyrick@wabbalabbadubdub.com", password: "C-137", name: "Rick"});
-                user.save((err, user) => {
+        describe('/DELETE/:id waypoint', () => {
+            it('it should Delete a waypoint by the given id', (done) => {
+                let waypoint = new waypointmodel({
+                    name: 'Fitness-centrum Flash Gym',
+                    id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
+                });
+                waypoint.save((err, waypoint) => {
                     chai.request(app)
-                        .delete('/api/users/' + user.email)
+                        .delete('/api/waypoints/' + waypoint.id)
                         .set('accept', 'application/json')
-                        .send(user)
+                        .send(waypoint)
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
                             res.body.should.have.property('message').eql("Deleted succesfully");
                             chai.request(app)
-                                .get('/api/users')
+                                .get('/api/waypoints')
                                 .set('content-type', 'application/json')
                                 .set('accept', 'application/json')
                                 .end((err, res) => {
@@ -183,24 +194,23 @@ describe('User', function () {
 
 
                 }),
-                    it('it should not Delete a user when given an incorrect email', (done) => {
-                        let user = new usermodel({
-                            email: "Rickyrick@wabbalabbadubdub.com",
-                            password: "C-137",
-                            name: "Rick"
+                    it('it should not Delete a waypoint when given an incorrect id', (done) => {
+                        let waypoint = new waypointmodel({
+                            name: 'Fitness-centrum Flash Gym',
+                            id: 'ChIJx9oOP13uxkcRmPYl1Ea20Jk'
                         });
-                        user.save((err, user) => {
+                        waypoint.save((err, waypoint) => {
                             chai.request(app)
-                                .delete('/api/users/' + 'Ricky')
+                                .delete('/api/waypoints/' + '9')
                                 .set('accept', 'application/json')
-                                .send(user)
+                                .send(waypoint)
                                 .end((err, res) => {
                                     res.should.have.status(200);
                                     res.body.should.be.a('object');
                                     res.body.should.have.property('message').eql("Deleted succesfully");
 
                                     chai.request(app)
-                                        .get('/api/users')
+                                        .get('/api/waypoints')
                                         .set('content-type', 'application/json')
                                         .set('accept', 'application/json')
                                         .end((err, res) => {
@@ -218,7 +228,7 @@ describe('User', function () {
             });
         });
         after(function (done) {
-            usermodel.remove({});
+            waypointmodel.remove({});
             done();
         });
 
