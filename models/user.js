@@ -4,9 +4,11 @@ const bcrypt = require('bcrypt-nodejs');
 console.log('Creating user schema');
 
 const userSchema = new mongoose.Schema({
-    name: {type: String},
+
+    name: {type: String, required: true},
     email: {type: String, required: true, index: true},
     local: {
+        name: String,
         email: String,
         password: String,
     },
@@ -48,12 +50,12 @@ userSchema.virtual('isAdmin').get(function () {
     return this.role.includes("admin");
 });
 
-userSchema.statics.findByUsername = function (username, cb) {
-    return this.find({name: {$regex: username, $options: "i"}}, cb);
+userSchema.statics.findByName = function (name, cb) {
+    return this.find({name: {$regex: name, $options: "i"}}).exec(cb);
 };
 
-userSchema.statics.findByName = function (name, cb) {
-    return this.find({name: {$regex: name, $options: "i"}}, cb);
+userSchema.statics.findByEmail = function (email, cb) {
+    return this.find({email: {$regex: email + "$", $options: "i"}}).exec(cb);
 };
 
 userSchema.statics.findByRole = function (inputRole, cb) {
