@@ -1,8 +1,7 @@
 const express = require('express');
+const router = express.Router();
 
-module.exports = function (app, passport) {
-
-    const router = express.Router();
+module.exports = function (passport) {
 
     /**
      * GOOGLE

@@ -25,7 +25,7 @@ describe('User Unit Test', function () {
         console.log("Initializing user unit tests...");
         mongoose.connection.once('open', function () {
             var usermodel = mongoose.model('User');
-            user = require('../routes/users');
+            user = require('../routes/api/users');
             app.use('/', user);
             console.log("Done initializing user unit tests.")
             done();

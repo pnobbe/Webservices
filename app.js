@@ -11,7 +11,6 @@ const morgan = require('morgan');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index');
 const app = express();
 
 const mongoose = require('mongoose');
@@ -23,7 +22,8 @@ const configDB = require('./config/db');
 
 
 const config = {
-    appRoot: __dirname // required config
+    appRoot: __dirname, // required config
+    appOrigin: "http://localhost:3000" // "https://restracer.herokuapp.com"
 };
 
 /**
@@ -36,6 +36,7 @@ const swaggerDefinition = {
         version: '0.0.1',
         description: 'The official ReST-Race API',
     },
+    host: config.appOrigin,
     basePath: '/',
 };
 
@@ -44,7 +45,7 @@ const options = {
     // import swaggerDefinitions
     swaggerDefinition: swaggerDefinition,
     // path to the API docs
-    apis: ['./routes/*.js'],
+    apis: ['./routes/api/*.js'],
 };
 
 // initialize swagger-jsdoc
@@ -78,7 +79,6 @@ require('./models/user');
 require('./models/waypoint');
 require('./models/race');
 require('./models/fillTestData')();
-
 
 console.log("Done.");
 
@@ -126,7 +126,7 @@ console.log("Initializing Passport... ");
 require('./config/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
-app.use(session({secret: 'GerardJolingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
+app.use(session({secret: 'GerardJolatingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session

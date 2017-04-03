@@ -14,6 +14,7 @@ module.exports = function (passport) {
     // by default, if there was no name, it would just be called 'local'
     passport.use('local-signup', new LocalStrategy({
             // by default, local strategy uses username and password, we will override with email
+            nameField: 'name',
             usernameField: 'email',
             passwordField: 'password',
             passReqToCallback: true // allows us to pass back the entire request to the callback
@@ -38,9 +39,11 @@ module.exports = function (passport) {
                     // create the user
                     var newUser = new User();
 
+                    newUser.local.name = req.body.name;
                     newUser.local.email = email;
                     newUser.local.password = newUser.generateHash(password);
 
+                    newUser.name = req.body.name;
                     newUser.email = email; // pull the first email;
 
 
@@ -107,7 +110,7 @@ module.exports = function (passport) {
      * FACEBOOK
      */
     passport.use('facebook', new FacebookStrategy({
-
+            profileFields: ['id', 'emails', 'name'],
             // pull in our app id and secret from our auth.js file
             clientID: configAuth.facebookAuth.clientID,
             clientSecret: configAuth.facebookAuth.clientSecret,
@@ -131,11 +134,14 @@ module.exports = function (passport) {
                         // if there is no user, create them
                         var newUser = new User();
 
+                        console.log(profile);
+
                         newUser.facebook.id = profile.id;
                         newUser.facebook.token = token;
-                        newUser.facebook.name = profile.displayName;
-                        newUser.facebook.email = profile.emails;
-                        newUser.name = profile.name.givenName + ' ' + profile.name.familyName;
+                        newUser.facebook.name = profile.name.givenName + " " + profile.name.familyName;
+                        newUser.facebook.email = profile.emails[0].value;
+                        newUser.name = profile.name.givenName + " " + profile.name.familyName;
+                        newUser.email = profile.emails[0].value;
 
                         newUser.save(function (err) {
                             if (err)

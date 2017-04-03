@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const router = express.Router();
 
@@ -17,13 +15,14 @@ const Waypoint = mongoose.model('Waypoint');
 
 /**
  * @swagger
- * /:
+ * /api/waypoints/:
  *   get:
  *     tags:
  *       - Waypoints
  *     description: Returns all waypoints
  *     produces:
  *       - application/json
+ *       - text/html
  *     responses:
  *       200:
  *         description: An array of waypoints
@@ -31,7 +30,14 @@ const Waypoint = mongoose.model('Waypoint');
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/', function(req, res){
-    res.send("hello waypoint");
+    res.format({
+        json: function(){
+            res.send({ message: 'Hello waypoint' });
+        },
+        html: function(){
+            res.send('<h1>Hello waypoint</h1>');
+        }
+    });
 });
 
 // GET all movies
@@ -39,7 +45,27 @@ function list(req, res, next) {
     res.json({movies: db.find()});
 }
 
-// GET a single movie
+/**
+ * @swagger
+ * /api/waypoints/:name:
+ *   get:
+ *     tags:
+ *       - Waypoints
+ *     description: Returns a single waypoint
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: name
+ *         description: Waypoint's name
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A single waypoint
+ *         schema:
+ *           $ref: '#/definitions/Waypoint'
+ */
 function get(req, res, next) {
     var movie = db.find(req.swagger.params.id.value);
     if (movie) {

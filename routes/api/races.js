@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const router = express.Router();
 
@@ -17,13 +15,14 @@ const Race = mongoose.model('Race');
 
 /**
  * @swagger
- * /:
+ * /api/races/:
  *   get:
  *     tags:
  *       - Races
  *     description: Returns all races
  *     produces:
  *       - application/json
+ *       - text/html
  *     responses:
  *       200:
  *         description: An array of races
@@ -31,14 +30,41 @@ const Race = mongoose.model('Race');
  *           $ref: '#/definitions/Race'
  */
 router.get('/', function(req, res){
-    res.send("hello race");
+    res.format({
+        json: function(){
+            res.send({ message: 'Hello race' });
+        },
+        html: function(){
+            res.send('<h1>Hello race</h1>');
+        }
+    });
 });
 // GET all movies
 function list(req, res, next) {
     res.json({movies: db.find()});
 }
 
-// GET a single movie
+/**
+ * @swagger
+ * /api/races/:name:
+ *   get:
+ *     tags:
+ *       - Races
+ *     description: Returns a single race
+ *     accepts:
+ *       - application/json
+ *     parameters:
+ *       - name: name
+ *         description: Race's name
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: A single race
+ *         schema:
+ *           $ref: '#/definitions/Race'
+ */
 function get(req, res, next) {
     var movie = db.find(req.swagger.params.id.value);
     if (movie) {

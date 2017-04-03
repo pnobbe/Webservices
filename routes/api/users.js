@@ -19,32 +19,40 @@ const User = mongoose.model('User');
 
 /**
  * @swagger
- * /:
+ * /api/users/:
  *   get:
  *     tags:
  *       - Users
  *     description: Returns all users
- *     produces:
+ *     accepts:
  *       - application/json
+ *       - text/html
  *     responses:
  *       200:
  *         description: An array of users
  *         schema:
  *           $ref: '#/definitions/User'
  */
-router.get('/', function(req, res){
-    res.send("hello user");
+router.get('/', function (req, res, next) {
+    res.format({
+        json: function () {
+            res.send({message: 'Hello user'});
+        },
+        html: function () {
+            res.send('<h1>Hello user</h1>');
+        }
+    });
     /*User.find({})
-        .then(data => {
-            res.status(200).send(data);
-        }).fail(res.status(204).send());
-        */
+     .then(data => {
+     res.status(200).send(data);
+     }).fail(res.status(204).send());
+     */
 });
 
 // POST save a user
 /**
  * @swagger
- * /:
+ * /api/users/:
  *   post:
  *     tags:
  *       - Users
@@ -64,7 +72,7 @@ router.get('/', function(req, res){
  *       500:
  *         description: User
  */
-router.post('/', function(req, res){
+router.post('/', function (req, res) {
     var user1 = new User();
     user1.name = req.body.name;
     user1.email = req.body.email;
@@ -80,7 +88,7 @@ router.post('/', function(req, res){
             },
 
             'application/json': function () {
-                res.json({success: 1, description: "User added to the list"});
+                res.status(200).send(user1);
             }
         })
     })
@@ -88,16 +96,17 @@ router.post('/', function(req, res){
 
 /**
  * @swagger
- * /:name:
+ * /api/users/:email:
  *   get:
  *     tags:
  *       - Users
  *     description: Returns a single user
- *     produces:
+ *     accepts:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - name: name
- *         description: User's name
+ *       - name: email
+ *         description: User's email
  *         in: path
  *         required: true
  *         type: string
@@ -107,29 +116,47 @@ router.post('/', function(req, res){
  *         schema:
  *           $ref: '#/definitions/User'
  */
-router.get('/:name', function(req, res){
-    var query = {};
-    console.log(req.params);
-    if (req.params.name) {
-        query.name = req.swagger.params.name.value;
+router.get('/:email', function (req, res) {
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
     } else {
         res.status(204).send();
     }
 
-    User.find(query)
-        .then(data => {
-            if (req.swagger.params.name.value) {
-                data = data[0];
-            }
-            console.log(data);
+    User.findByEmail(email, function (errors, data) {
 
-            res.json(data);
-        }).fail(res.status(204).send());
+        if (errors) {
+            res.status(500).send("An error occurred.");
+        }
+
+        let user = data[0];
+        res.format({
+            json: function () {
+                console.log("json");
+                if (user) {
+                    res.status(200).send(user);
+                } else {
+                    res.status(404).send({message: "No user found with that email. "});
+                }
+            }.bind(res),
+            html: function () {
+                console.log("html");
+                if (user) {
+                    res.status(200).send('<h1>' + user.name + '</h1>');
+                } else {
+                    res.status(404).send('<strong>No user found with that email. </strong>');
+                }
+            }
+        });
+    });
+
+
 });
 
 /**
  * @swagger
- * /:name:
+ * /api/users/:name:
  *   put:
  *     tags:
  *      - Users
@@ -146,13 +173,45 @@ router.get('/:name', function(req, res){
  *       200:
  *         description: Successfully updated
  */
-router.get('/:name', function(req, res){
-    //put
+router.put('/:name', function (req, res) {
+    var name;
+    if (req.params.name || req.body) {
+        name = req.params.name;
+    } else {
+        res.status(204).send();
+    }
+
+    User.findByName(name, function (errors, data) {
+
+        if (errors) {
+            res.status(500).send("An error occurred.");
+        }
+
+        let user = data[0];
+        res.format({
+            json: function () {
+                console.log("json");
+                if (user) {
+                    res.status(200).send("Successfully updated.");
+                } else {
+                    res.status(404).send({message: "No user found with that name. "});
+                }
+            }.bind(res),
+            html: function () {
+                console.log("html");
+                if (user) {
+                    res.status(200).send('<h1> Successfully updated. </h1>');
+                } else {
+                    res.status(404).send('<strong> No user found with that name. </strong>');
+                }
+            }
+        });
+    });
 });
 
 /**
  * @swagger
- * /:name:
+ * /api/users/:name:
  *   delete:
  *     tags:
  *       - Users
@@ -169,7 +228,7 @@ router.get('/:name', function(req, res){
  *       200:
  *         description: Successfully deleted
  */
-router.get('/:name', function(req, res){
+router.delete('/:name', function (req, res) {
     //delete
 });
 
