@@ -4,45 +4,45 @@ var Waypoint = mongoose.model('Waypoint');
 console.log('Creating races schema');
 
 var raceSchema = new mongoose.Schema({
-        owner: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
+    name: {type: String, required: true, index: true},
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
 
-        },
-        participants: [{
+    },
+    participants: [{
 
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
 
-        }],
-        waypoints: [
-            {
-                waypoint: {
+    }],
+    waypoints: [
+        {
+            waypoint: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Waypoint'
+
+            },
+            passed_participants: [{
+                user: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Waypoint'
+                    ref: 'User',
+                    required: true
 
                 },
-                passed_participants: [{
-                    user: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: 'User',
-                        required: true
-
-                    },
-                    time: {type: Date, required: true}
-                }]
-            }
-        ],
-        startTime: {
-            type: Date, min: new Date()
+                time: {type: Date, required: true}
+            }]
         }
-        ,
-        stopTime: {
-            type: Date, min: new Date()
-        }
-    })
-    ;
+    ],
+    startTime: {
+        type: Date, min: new Date()
+    }
+    ,
+    stopTime: {
+        type: Date, min: new Date()
+    }
+});
 
 raceSchema.set('toJSON', {virtuals: true});
 raceSchema.set('toObject', {virtuals: true});

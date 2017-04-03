@@ -1,32 +1,32 @@
 const mongoose = require('mongoose');
-const bcrypt   = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt-nodejs');
 
 console.log('Creating user schema');
 
 const userSchema = new mongoose.Schema({
     name: {type: String},
-    email: {type: String},
-    local            : {
-        email        : String,
-        password     : String,
+    email: {type: String, required: true, index: true},
+    local: {
+        email: String,
+        password: String,
     },
-    facebook         : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
+    facebook: {
+        id: String,
+        token: String,
+        email: String,
+        name: String
     },
-    twitter          : {
-        id           : String,
-        token        : String,
-        displayName  : String,
-        username     : String
+    twitter: {
+        id: String,
+        token: String,
+        displayName: String,
+        username: String
     },
-    google           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
+    google: {
+        id: String,
+        token: String,
+        email: String,
+        name: String
     },
     role: {type: [String], default: ["user"]},
 });
@@ -35,12 +35,12 @@ userSchema.set('toJSON', {virtuals: true});
 userSchema.set('toObject', {virtuals: true});
 
 // generating a hash
-userSchema.methods.generateHash = function(password) {
+userSchema.methods.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
 // checking if password is valid
-userSchema.methods.validPassword = function(password) {
+userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.local.password);
 };
 

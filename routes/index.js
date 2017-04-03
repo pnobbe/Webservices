@@ -1,13 +1,13 @@
 module.exports = function (app, passport) {
 
-    /*
-     HOW TO USE API:
+
+     // HOW TO USE API:
      var Places = require('../service/places');
      var place = new Places();
      place.getNearbyLocationsbyCity("Den Bosch, Netherlands").then(data => {
      console.log(data);
      });
-     */
+
 
     /**
      * HOME PAGE

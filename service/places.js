@@ -98,12 +98,8 @@ module.exports = class Places {
                 let waypoint = new Waypoint();
                 waypoint.id = element.place_id;
                 waypoint.name = element.name;
-                waypoint.coordinates = {
-                    lat: element.geometry.location.lat,
-                    lon: element.geometry.location.lng
-                };
                 waypoint.address = element.vicinity;
-                return waypoint;
+                return {waypoint: waypoint, lat: element.geometry.location.lat, lng: element.geometry.location.lng};
             });
         }
         else {

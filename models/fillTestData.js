@@ -13,22 +13,16 @@ user1.password = "NOPLAINTEXT!";
 const waypoint1 = new Waypoint();
 waypoint1.id = "w1";
 waypoint1.name = "plekje1";
-waypoint1.coordinates = {
-    lat: 3,
-    lon: 4
-};
 waypoint1.address = "street 123";
+
 const waypoint2 = new Waypoint();
 waypoint2.id = "w2";
 waypoint2.name = "plekje2";
-waypoint2.coordinates = {
-    lat: 4,
-    lon: 5
-};
 waypoint2.address = "street 1234";
 
 const race1 = new Race();
 
+race1.name = "TESTRACE";
 race1.owner = user1;
 race1.participants = [user1];
 race1.waypoints = [
@@ -48,7 +42,7 @@ function fillTestUsers() {
     const testData = [
         user1
     ];
-    //fill(User, testData, "user");
+    fill(User, testData, "user");
 }
 
 function fillTestWaypoints() {
@@ -87,6 +81,5 @@ function fill(monObject, testData, name) {
 
 
 module.exports = function () {
-    q.fcall(fillTestUsers).then(fillTestWaypoints);
-    q.fcall(fillTestWaypoints).then(fillTestRaces);
+    q.fcall(fillTestRaces).then(fillTestWaypoints).then(fillTestUsers);
 }
