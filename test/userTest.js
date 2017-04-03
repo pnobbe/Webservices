@@ -2,10 +2,20 @@ var request = require('supertest');
 var expect = require('chai').expect;
 var should = require('chai').should();
 var mongoose = require('mongoose');
+const configDB = require('../config/db');
 var user;
+var usermodel;
 
 var app = require('express')();
 
+// Data Access Layer
+mongoose.connect(configDB.test_url);
+mongoose.Promise = require('q').Promise;
+
+// Models
+require('../models/user');
+require('../models/waypoint');
+require('../models/race');
 
 function makeRequest(route, statusCode, done) {
     request(app)
@@ -21,15 +31,14 @@ function makeRequest(route, statusCode, done) {
 };
 
 describe('User Unit Test', function () {
+
     before(function (done) {
         console.log("Initializing user unit tests...");
-        mongoose.connection.once('open', function () {
-            var usermodel = mongoose.model('User');
-            user = require('../routes/api/users');
-            app.use('/', user);
-            console.log("Done initializing user unit tests.")
-            done();
-        });
+        usermodel = mongoose.model('User');
+        user = require('../routes/api/users');
+        app.use('/', user);
+        console.log("Done initializing user unit tests.")
+        done();
     });
 
     describe('Testing user route', function () {
@@ -41,24 +50,15 @@ describe('User Unit Test', function () {
         describe('with permission', function () {
             describe('without params', function () {
                 it('should return a list of users', function (done) { // LIST
-                    /*var expectedList = [];
 
-                     makeRequest('/', 200, function (err, res) {
-                     if (err) {
-                     return done(err);
-                     }
-
-                     expect(res.body).to.have.property('users');
-                     expect(res.body.users).to.not.be.undefined;
-                     // Expect body.users to not be empty;
-                     // Expect body.users to contain specific users.
-                     done();
-                     });*/
                 });
             });
 
             describe('with invalid params', function () {
                 it('should return return (invalid PUT or CREATE error)', function (done) {
+                    makeRequest("/", 200, function (err, data) {
+
+                    });
                 });
             });
 
@@ -74,4 +74,10 @@ describe('User Unit Test', function () {
             });
         });
     });
+
+    after(function (done) {
+        usermodel.remove({});
+        done();
+    });
+
 });
