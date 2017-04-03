@@ -3,6 +3,8 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const io = req.app.get('io');
+
 
 /**
  * @swagger
@@ -46,6 +48,7 @@ router.get('/', function (req, res, next) {
             res.status(400).send({error: "An error occurred"});
         }
         else {
+
             res.format({
                 json: function () {
                     res.status(200).send(data);
@@ -97,6 +100,9 @@ router.post('/', function (req, res, next) {
             res.status(400).send({error: info});
         }
         else {
+
+            io.emit('new_user', req.body.email);
+
             res.format({
                 html: function () {
                     res.status(200).send('<p> User has been created successfully. </p>');
@@ -203,6 +209,9 @@ router.put('/:email', function (req, res) {
             res.status(400).send({error: message});
         }
         else {
+
+            io.emit('update_user', { email: email, body: body });
+
             res.format({
                 html: function () {
                     res.status(200).send('<p> success.name</p>');

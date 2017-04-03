@@ -1,5 +1,5 @@
 var port = 3001;
-var socket = io('http://localhost:' + port);
+var socket = io('http://localhost:' + port)
 
 socket.on('connect', function () {
     console.log("Successfully connected to socket on port " + port);

@@ -1,0 +1,96 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<% include ./header.ejs %>
+<body>
+<div class="container">
+    <h1> ADMIN </h1>
+    <div class="row">
+
+        <% if (user.local.email) { %>
+        <!-- LOCAL INFORMATION -->
+        <div class="col-sm-12">
+            <div class="well">
+                <h3><span class="fa fa-user"></span> Local</h3>
+
+                <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
+                    <strong>id</strong>: <%= user._id %><br>
+                    <strong>email</strong>: <%= user.local.email %><br>
+                    <strong>password</strong>: <%= user.local.password %>
+                </p>
+                <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- check if the user has this token (is the user authenticated with this social account) -->
+        <% if (user.google.token) { %>
+        <!-- GOOGLE INFORMATION -->
+        <div class="col-sm-12">
+            <div class="well">
+                <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google</h3>
+
+                <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
+                    <strong>id</strong>: <%= user.google.id %><br>
+                    <strong>token</strong>: <%= user.google.token %><br>
+                    <strong>email</strong>: <%= user.google.email %><br>
+                    <strong>name</strong>: <%= user.google.name %>
+                </p>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- check if the user has this token (is the user authenticated with this social account) -->
+        <% if (user.facebook.token) { %>
+        <!-- FACEBOOK INFORMATION -->
+        <div class="col-sm-12">
+            <div class="well">
+                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+
+                <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
+                    <strong>id</strong>: <%= user.facebook.id %><br>
+                    <strong>token</strong>: <%= user.facebook.token %><br>
+                    <strong>email</strong>: <%= user.facebook.email %><br>
+                    <strong>name</strong>: <%= user.facebook.name %><br>
+                </p>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Waypoints -->
+        <h1>Users</h1>
+        <hr>
+        <ul class="list-group" id="userList">
+        </ul>
+
+        <!-- Waypoints -->
+        <h1>Waypoints</h1>
+        <hr>
+        <button class="btn btn-success btn-new-waypoint">New</button>
+        <ul class="list-group" id="waypointList">
+        </ul>
+
+        <!-- Races -->
+        <h1>Races</h1>
+        <hr>
+        <button class="btn btn-success btn-new-race">New</button>
+        <ul class="list-group" id="raceList">
+        </ul>
+    </div>
+</div>
+
+</div>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="/javascripts/socket.io.min.js"></script>
+<script type="text/javascript" src="/javascripts/client.js"></script>
+<script type="text/javascript" src="/javascripts/users.js"></script>
+<script type="text/javascript" src="/javascripts/races.js"></script>
+<script type="text/javascript" src="/javascripts/waypoints.js"></script>
+</body>
+</html>
