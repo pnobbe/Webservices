@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
+
 /**
  * @swagger
  * definitions:
@@ -39,6 +40,7 @@ const User = mongoose.model('User');
  *           $ref: '#/definitions/User'
  */
 router.get('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     User.find({}, function (errors, data) {
 
@@ -46,6 +48,7 @@ router.get('/', function (req, res, next) {
             res.status(400).send({error: "An error occurred"});
         }
         else {
+
             res.format({
                 json: function () {
                     res.status(200).send(data.map(el => {
@@ -92,6 +95,7 @@ router.get('/', function (req, res, next) {
  *         description: An error occurred.
  */
 router.post('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     // Call User.create
     User.createNewLocal(req.body, function (errors, user, info) {
@@ -103,6 +107,9 @@ router.post('/', function (req, res, next) {
             res.status(400).send({error: info});
         }
         else {
+
+            io.emit('new_user', req.body.email);
+
             res.format({
                 html: function () {
                     res.status(200).send('<p> User has been created successfully. </p>');
@@ -141,6 +148,8 @@ router.post('/', function (req, res, next) {
  *           $ref: '#/definitions/User'
  */
 router.get('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
@@ -202,6 +211,8 @@ router.get('/:email', function (req, res) {
  *         description: Updated user
  */
 router.put('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
@@ -215,6 +226,9 @@ router.put('/:email', function (req, res) {
             res.status(400).send({error: message});
         }
         else {
+
+            io.emit('update_user', { email: email, body: req.body });
+
             res.format({
                 html: function () {
                     var resp = "";
@@ -252,6 +266,8 @@ router.put('/:email', function (req, res) {
  *         description: Successfully deleted
  */
 router.delete('/:email', function (req, res) {
+    const io = req.app.get('io');
+
     var email;
     if (req.params.email) {
         email = req.params.email;
