@@ -4,12 +4,6 @@
 <% include ./header.ejs %>
 <body>
 <div class="container">
-
-    <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> Profile Page Of <%= displayname %></h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-    </div>
-
     <div class="row">
 
         <% if (user.local.email) { %>
@@ -18,13 +12,14 @@
             <div class="well">
                 <h3><span class="fa fa-user"></span> Local</h3>
 
-
                 <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
                     <strong>id</strong>: <%= user._id %><br>
                     <strong>email</strong>: <%= user.local.email %><br>
                     <strong>password</strong>: <%= user.local.password %>
                 </p>
-
+                <a href="/logout" class="btn btn-default btn-sm">Logout</a>
             </div>
         </div>
         <% } %>
@@ -36,14 +31,14 @@
             <div class="well">
                 <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google</h3>
 
-
                 <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
                     <strong>id</strong>: <%= user.google.id %><br>
                     <strong>token</strong>: <%= user.google.token %><br>
                     <strong>email</strong>: <%= user.google.email %><br>
                     <strong>name</strong>: <%= user.google.name %>
                 </p>
-
             </div>
         </div>
         <% } %>
@@ -56,23 +51,38 @@
                 <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 
                 <p>
+                    <strong>name</strong>: <%= user.name %><br>
+                    <strong>roles</strong>: <%= user.role %><br>
                     <strong>id</strong>: <%= user.facebook.id %><br>
                     <strong>token</strong>: <%= user.facebook.token %><br>
                     <strong>email</strong>: <%= user.facebook.email %><br>
                     <strong>name</strong>: <%= user.facebook.name %><br>
                 </p>
-
             </div>
         </div>
         <% } %>
 
+        <!-- Waypoints -->
+        <h1>Waypoints</h1>
+        <hr>
+        <button class="btn btn-success btn-new-waypoint">New</button>
+        <ul class="list-group" id="waypointList">
+        </ul>
 
+        <!-- Races -->
+        <h1>Races</h1>
+        <hr>
+        <button class="btn btn-success btn-new-race">New</button>
+        <ul class="list-group" id="raceList">
+        </ul>
     </div>
-
-    </div>
+</div>
 
 </div>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="/javascripts/socket.io.min.js"></script>
 <script type="text/javascript" src="/javascripts/client.js"></script>
+<script type="text/javascript" src="/javascripts/races.js"></script>
+<script type="text/javascript" src="/javascripts/waypoints.js"></script>
 </body>
 </html>

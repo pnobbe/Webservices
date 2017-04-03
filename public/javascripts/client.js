@@ -9,9 +9,17 @@ socket.on('message', function (message) {
     console.log("Host emits message: " + message);
 });
 
-socket.on('new_client', function (data) {
-    console.log("New client connected. (" + data.id + "). \nTotal clients connected: " + data.count);
+socket.on('data', function (message) {
+    console.log(message);
+    message.waypoints.forEach(function(id) {
+        addWaypoint(id);
+    });
+    message.races.forEach(function(id) {
+        addRace(id);
+    });
 });
+
 socket.on('disconnect', function () {
     console.log("Disconnected from socket on port " + port);
 });
+

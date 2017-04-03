@@ -110,11 +110,17 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('static'));
 
 let connectedClients = 0;
+let waypointCount = 0;
+let raceCount = 0;
+let waypoints = [];
+let races = [];
 
 // Set socket.io listeners.
 io.on('connection', (socket) => {
     connectedClients++;
     console.log('SOCKET.IO: Client connected. Total clients: ' + connectedClients);
+
+    socket.emit('data', { waypoints: waypoints, races: races });
 
     socket.broadcast.emit('new_client', {id: socket.id, count: connectedClients});
 
@@ -122,6 +128,29 @@ io.on('connection', (socket) => {
         connectedClients--;
         console.log('SOCKET.IO: Client disconnected. Total clients: ' + connectedClients);
     });
+
+    socket.on('new_waypoint', function(){
+        waypointCount++;
+        waypoints.push(waypointCount);
+        io.sockets.emit("new_waypoint", waypointCount);
+    });
+
+    socket.on('delete_waypoint', function(id){
+        waypoints.splice(id-1, 1);
+        io.sockets.emit("delete_waypoint", id);
+    });
+
+    socket.on('new_race', function(){
+        raceCount++;
+        races.push(raceCount);
+        io.sockets.emit("new_race", raceCount);
+    });
+
+    socket.on('delete_race', function(id){
+        races.splice(id-1, 1);
+        io.sockets.emit("delete_race", id);
+    });
+
 });
 
 console.log("Done.");
