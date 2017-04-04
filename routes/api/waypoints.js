@@ -317,6 +317,25 @@ router.delete('/:id', function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * /waypoints/:id:
+ *   delete:
+ *     tags:
+ *       - Waypoints
+ *     description: Deletes a single waypoint
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - id: waypoint
+ *         description: waypoint id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
 router.get('/search/nearby/:city', function (req, res) {
     var city;
     if (req.params.city) {
@@ -352,6 +371,25 @@ router.get('/search/nearby/:city', function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * /waypoints/search/nearby/:city/:criteria:
+ *   get:
+ *     tags:
+ *       - Waypoints
+ *     description: Deletes a single waypoint
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - id: waypoint
+ *         description: waypoint id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
 router.get('/search/nearby/:city/:criteria', function (req, res) {
     var city;
     var criteria;
