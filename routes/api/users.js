@@ -249,7 +249,7 @@ router.put('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:name:
+ * /users/:email:
  *   delete:
  *     tags:
  *       - Users

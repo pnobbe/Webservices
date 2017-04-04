@@ -25,7 +25,20 @@ module.exports = class Places {
         };
         return this.places.nearbySearch(params).then((res) => {
             // convert to waypoint
-            return self.resultToWayPoints(res);
+            if (res.statusCode != 200 || res.body.status != 'OK') {
+                return new Promise((resolve) => {
+                    resolve([]);
+                });
+            }
+
+            var arr = res.body.results;
+            var promises = arr.map(entree => {
+                var waypoint = new Waypoint();
+                waypoint.id = entree.place_id;
+                return waypoint;
+            });
+            return self.waypointsToCoordinates(promises);
+            s
         });
     }
 
@@ -45,7 +58,19 @@ module.exports = class Places {
         };
         return this.places.radarSearch(params).then((res) => {
             // convert to waypoint
-            return self.resultToWayPoints(res);
+            if (res.statusCode != 200 || res.body.status != 'OK') {
+                return new Promise((resolve) => {
+                    resolve([]);
+                });
+            }
+
+            var arr = res.body.results;
+            var promises = arr.map(entree => {
+                var waypoint = new Waypoint();
+                waypoint.id = entree.place_id;
+                return waypoint;
+            });
+            return self.waypointsToCoordinates(promises);
         });
 
     }
@@ -56,7 +81,6 @@ module.exports = class Places {
     }
 
     getNearbyLocationsbyCity(city) {
-        console.log(city);
         var self = this;
         return this.cityToCoordinate(city).then(data => {
             return self.getNearbyLocations(data.lat, data.lng);
@@ -99,7 +123,9 @@ module.exports = class Places {
         var arr = res.body.results;
         if (Array.isArray(arr)) {
 
+
             return arr.map(element => {
+
                 // element to Waypoint
 
                 let waypoint = new Waypoint();
@@ -131,10 +157,11 @@ module.exports = class Places {
         var promises = waypoints.map(waypoint => {
             return self.getDetail(waypoint.id).then(data => {
 
+
                 if (data == null || data.body == null || data.body.result == null) {
                     return {waypoint: waypoint};
                 }
-
+                waypoint.name = data.body.result.name;
                 var o =
                 {
                     waypoint: waypoint,

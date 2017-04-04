@@ -16,24 +16,24 @@ const Race = mongoose.model('Race');
 
 /**
  * @swagger
- * /users/:
+ * /races/:
  *   get:
  *     tags:
- *       - Users
- *     description: Returns all users
+ *       - Races
+ *     description: Returns all races
  *     accepts:
  *       - application/json
  *       - text/html
  *     responses:
  *       200:
- *         description: An array of users
+ *         description: An array of races
  *         schema:
- *           $ref: '#/definitions/User'
+ *           $ref: '#/definitions/Race'
  */
 router.get('/', function (req, res, next) {
     const io = req.app.get('io');
 
-    User.find({}, function (errors, data) {
+    Race.find({}, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -42,16 +42,13 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(el => {
-                        return {name: el.name, email: el.email};
-                    }));
+                    res.status(200).send(data);
                 },
                 html: function () {
                     let resp = "<div>";
                     data.forEach(function (data) {
                         resp += "<div>";
                         resp += "<h2>" + data.name + "</h2>";
-                        resp += "<h4>" + data.email + "</h4>";
                         resp += "</div>";
                     });
                     resp += "</div>";
@@ -65,20 +62,20 @@ router.get('/', function (req, res, next) {
 
 /**
  * @swagger
- * /users/:
+ * /races/:
  *   post:
  *     tags:
- *       - Users
- *     description: Creates a new user
+ *       - Races
+ *     description: Creates a new race
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: user
- *         description: User object
+ *       - name: race
+ *         description: Race object
  *         in: body
  *         required: true
  *         schema:
- *           $ref: '#/definitions/User'
+ *           $ref: '#/definitions/Race'
  *     responses:
  *       200:
  *         description: Successfully created
@@ -88,8 +85,8 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
 
-    // Call User.create
-    User.createNewLocal(req.body, function (errors, user, info) {
+    // Call Race.create
+    Race.createNewLocal(req.body, function (errors, race, info) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -99,15 +96,15 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('new_user', req.body.email);
+            io.emit('new_race', req.body.name);
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> User has been created successfully. </p>');
+                    res.status(200).send('<p> Race has been created successfully. </p>');
                 },
 
                 json: function () {
-                    res.status(200).send({message: "User has been created successfully.", user: user});
+                    res.status(200).send({message: "Race has been created successfully.", race: race});
                 }
             })
         }
@@ -118,62 +115,61 @@ router.post('/', function (req, res, next) {
 
 /**
  * @swagger
- * /users/:email:
+ * /races/:name:
  *   get:
  *     tags:
- *       - Users
- *     description: Returns a single user
+ *       - Races
+ *     description: Returns a single race
  *     accepts:
  *       - application/json
  *       - text/html
  *     parameters:
- *       - name: email
- *         description: User's email
+ *       - name: name
+ *         description: Race's name
  *         in: path
  *         required: true
  *         type: string
  *     responses:
  *       200:
- *         description: A single user
+ *         description: A single race
  *         schema:
- *           $ref: '#/definitions/User'
+ *           $ref: '#/definitions/Race'
  */
-router.get('/:email', function (req, res) {
+router.get('/:name', function (req, res) {
     const io = req.app.get('io');
 
-    var email;
-    if (req.params.email) {
-        email = req.params.email;
+    var name;
+    if (req.params.name) {
+        name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
     }
 
-    User.findByEmail(email, function (errors, data) {
+    Race.findByName(name, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred."});
         }
 
-        let user = data[0];
+        let race = data[0];
         res.format({
             json: function () {
-                if (user) {
-                    res.status(200).send({name: user.name, email: user.email});
+                if (race) {
+                    res.status(200).send(race);
                 } else {
-                    res.status(400).send({error: "No user found with that email."});
+                    res.status(400).send({error: "No race found with that name."});
                 }
             }.bind(res),
             html: function () {
-                if (user) {
+                if (race) {
                     var resp = "";
                     resp += "<div>";
-                    resp += "<h2>" + user.name + "</h2>";
-                    resp += "<h4>" + user.email + "</h4>";
+                    resp += "<h2>" + race.name + "</h2>";
                     resp += "</div>";
 
                     res.status(200).send(resp);
                 } else {
-                    res.status(400).send('<strong>No user found with that email. </strong>');
+                    res.status(400).send('<strong>No race found with that name. </strong>');
                 }
             }
         });
@@ -184,53 +180,52 @@ router.get('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:email:
+ * /races/:name:
  *   put:
  *     tags:
- *      - Users
- *     description: Updates a single user
+ *      - Races
+ *     description: Updates a single race
  *     produces: application/json
  *     parameters:
- *       email: user
+ *       name: race
  *       in: body
- *       description: Fields for the User resource
+ *       description: Fields for the Race resource
  *       schema:
  *         type: object
- *         $ref: '#/definitions/User'
+ *         $ref: '#/definitions/Race'
  *     responses:
  *       200:
- *         description: Updated user
+ *         description: Updated race
  */
-router.put('/:email', function (req, res) {
+router.put('/:name', function (req, res) {
     const io = req.app.get('io');
 
-    var email;
-    if (req.params.email) {
-        email = req.params.email;
+    var name;
+    if (req.params.name) {
+        name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
     }
-    // Call User.update
-    User.updateUser(email, req.body, function (message, success) {
+    // Call Race.update
+    Race.updateRace(name, req.body, function (message, success) {
 
         if (!success) {
             res.status(400).send({error: message});
         }
         else {
 
-            io.emit('update_user', {email: email, body: req.body});
+            io.emit('update_race', {name: name, body: req.body});
 
             res.format({
                 html: function () {
                     var resp = "";
                     resp += "<div>";
                     resp += "<h2>" + success.name + "</h2>";
-                    resp += "<h4>" + success.email + "</h4>";
                     resp += "</div>";
                     res.status(200).send(resp);
                 },
                 json: function () {
-                    res.status(200).send({name: success.name, email: success.email});
+                    res.status(200).send(success);
                 }
             })
         }
@@ -239,16 +234,16 @@ router.put('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:name:
+ * /races/:name:
  *   delete:
  *     tags:
- *       - Users
- *     description: Deletes a single user
+ *       - Races
+ *     description: Deletes a single race
  *     produces:
  *       - application/json
  *     parameters:
- *       - email: user
- *         description: User's id
+ *       - name: race
+ *         description: Race's names
  *         in: path
  *         required: true
  *         type: string
@@ -256,20 +251,20 @@ router.put('/:email', function (req, res) {
  *       200:
  *         description: Successfully deleted
  */
-router.delete('/:email', function (req, res) {
+router.delete('/:name', function (req, res) {
     const io = req.app.get('io');
 
-    var email;
-    if (req.params.email) {
-        email = req.params.email;
+    var name;
+    if (req.params.name) {
+        name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
     }
 
-    User.deleteUser(email, function (errors) {
+    Race.deleteRace(name, function (errors) {
 
         if (errors) {
-            res.status(500).send("Error deleting " + email);
+            res.status(500).send("Error deleting " + name);
         }
         else {
             res.format({

@@ -122,7 +122,7 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('delete_user', { email: email });
+            io.emit('delete_user', {email: email});
 
             res.format({
                     html: function () {
@@ -279,7 +279,7 @@ router.put('/:id', function (req, res) {
         }
         else {
 
-            io.emit('update_waypoint', { id: id, body: req.body });
+            io.emit('update_waypoint', {id: id, body: req.body});
 
             res.format({
                 json: function () {
@@ -354,7 +354,7 @@ router.delete('/:id', function (req, res) {
         }
         else {
 
-            io.emit('delete_waypoint', { id: id });
+            io.emit('delete_waypoint', {id: id});
 
             res.format({
                 html: function () {
@@ -369,5 +369,72 @@ router.delete('/:id', function (req, res) {
     });
 });
 
+router.get('/search/nearby/:city', function (req, res) {
+    var city;
+    if (req.params.city) {
+        city = req.params.city;
+    } else {
+        res.status(400).send({error: "An error occurred"});
+    }
+
+
+    const Places = require('../../service/places');
+    let p = new Places();
+
+
+    p.getNearbyLocationsbyCity(city).then(data => {
+
+        res.status(200).send(data.map(waypoint => {
+            var obj = {
+                id: waypoint.waypoint.id,
+                name: waypoint.waypoint.name
+
+            };
+
+            if (waypoint.lat) {
+                obj.address = waypoint.address;
+                obj.lat = waypoint.lat;
+                obj.lng = waypoint.lng;
+            }
+
+            return obj;
+        }));
+    });
+});
+
+router.get('/search/nearby/:city/:criteria', function (req, res) {
+    var city;
+    var criteria;
+    if (req.params.city && req.params.criteria) {
+        city = req.params.city;
+        criteria = req.params.criteria;
+    } else {
+        res.status(400).send({error: "An error occurred"});
+    }
+
+
+    const Places = require('../../service/places');
+    let p = new Places();
+
+
+    p.getNearbybyCity(city, criteria).then(data => {
+
+        res.status(200).send(data.map(waypoint => {
+            var obj = {
+                id: waypoint.waypoint.id,
+                name: waypoint.waypoint.name
+
+            };
+
+            if (waypoint.lat) {
+                obj.address = waypoint.address;
+                obj.lat = waypoint.lat;
+                obj.lng = waypoint.lng;
+            }
+
+            return obj;
+        }));
+    });
+});
 //export this router to use in our index.js
 module.exports = router;
