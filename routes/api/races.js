@@ -13,91 +13,277 @@ const Race = mongoose.model('Race');
  *         type: string
  */
 
+
 /**
  * @swagger
- * /api/races/:
+ * /users/:
  *   get:
  *     tags:
- *       - Races
- *     description: Returns all races
- *     produces:
+ *       - Users
+ *     description: Returns all users
+ *     accepts:
  *       - application/json
  *       - text/html
  *     responses:
  *       200:
- *         description: An array of races
+ *         description: An array of users
  *         schema:
- *           $ref: '#/definitions/Race'
+ *           $ref: '#/definitions/User'
  */
-router.get('/', function(req, res){
-    res.format({
-        json: function(){
-            res.send({ message: 'Hello race' });
-        },
-        html: function(){
-            res.send('<h1>Hello race</h1>');
+router.get('/', function (req, res, next) {
+    const io = req.app.get('io');
+
+    User.find({}, function (errors, data) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred"});
+        }
+        else {
+
+            res.format({
+                json: function () {
+                    res.status(200).send(data.map(el => {
+                        return {name: el.name, email: el.email};
+                    }));
+                },
+                html: function () {
+                    let resp = "<div>";
+                    data.forEach(function (data) {
+                        resp += "<div>";
+                        resp += "<h2>" + data.name + "</h2>";
+                        resp += "<h4>" + data.email + "</h4>";
+                        resp += "</div>";
+                    });
+                    resp += "</div>";
+                    res.status(200).send(resp);
+                }
+            });
         }
     });
+
 });
-// GET all movies
-function list(req, res, next) {
-    res.json({movies: db.find()});
-}
 
 /**
  * @swagger
- * /api/races/:name:
- *   get:
+ * /users/:
+ *   post:
  *     tags:
- *       - Races
- *     description: Returns a single race
- *     accepts:
+ *       - Users
+ *     description: Creates a new user
+ *     produces:
  *       - application/json
  *     parameters:
- *       - name: name
- *         description: Race's name
+ *       - name: user
+ *         description: User object
+ *         in: body
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/User'
+ *     responses:
+ *       200:
+ *         description: Successfully created
+ *       500:
+ *         description: An error occurred.
+ */
+router.post('/', function (req, res, next) {
+    const io = req.app.get('io');
+
+    // Call User.create
+    User.createNewLocal(req.body, function (errors, user, info) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred"});
+        }
+        else if (info) {
+            res.status(400).send({error: info});
+        }
+        else {
+
+            io.emit('new_user', req.body.email);
+
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> User has been created successfully. </p>');
+                },
+
+                json: function () {
+                    res.status(200).send({message: "User has been created successfully.", user: user});
+                }
+            })
+        }
+    });
+
+
+});
+
+/**
+ * @swagger
+ * /users/:email:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Returns a single user
+ *     accepts:
+ *       - application/json
+ *       - text/html
+ *     parameters:
+ *       - name: email
+ *         description: User's email
  *         in: path
  *         required: true
  *         type: string
  *     responses:
  *       200:
- *         description: A single race
+ *         description: A single user
  *         schema:
- *           $ref: '#/definitions/Race'
+ *           $ref: '#/definitions/User'
  */
-function get(req, res, next) {
-    var movie = db.find(req.swagger.params.id.value);
-    if (movie) {
-        res.json(movie);
-    }
-    else {
-        res.status(204).send();
-    }
-}
+router.get('/:email', function (req, res) {
+    const io = req.app.get('io');
 
-// POST save a movie
-function save(req, res, next) {
-    res.json({success: db.save(req.body), description: "Movie added to the list"});
-}
-
-// PUT update a movie
-function update(req, res, next) {
-    if (db.update(req.swagger.params.id.value, req.body)) {
-        res.json({success: 1, description: "Movie has been updated!"});
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
     } else {
-        res.status(204).send();
+        res.status(400).send({error: "An error occurred"});
     }
-}
 
-// DEL delete a movie
-function remove(req, res, next) {
-    if (db.remove(req.swagger.params.id.value)) {
-        res.json({success: 1, description: "Movie removed successfully."});
+    User.findByEmail(email, function (errors, data) {
+
+        if (errors) {
+            res.status(400).send({error: "An error occurred."});
+        }
+
+        let user = data[0];
+        res.format({
+            json: function () {
+                if (user) {
+                    res.status(200).send({name: user.name, email: user.email});
+                } else {
+                    res.status(400).send({error: "No user found with that email."});
+                }
+            }.bind(res),
+            html: function () {
+                if (user) {
+                    var resp = "";
+                    resp += "<div>";
+                    resp += "<h2>" + user.name + "</h2>";
+                    resp += "<h4>" + user.email + "</h4>";
+                    resp += "</div>";
+
+                    res.status(200).send(resp);
+                } else {
+                    res.status(400).send('<strong>No user found with that email. </strong>');
+                }
+            }
+        });
+    });
+
+
+});
+
+/**
+ * @swagger
+ * /users/:email:
+ *   put:
+ *     tags:
+ *      - Users
+ *     description: Updates a single user
+ *     produces: application/json
+ *     parameters:
+ *       email: user
+ *       in: body
+ *       description: Fields for the User resource
+ *       schema:
+ *         type: object
+ *         $ref: '#/definitions/User'
+ *     responses:
+ *       200:
+ *         description: Updated user
+ */
+router.put('/:email', function (req, res) {
+    const io = req.app.get('io');
+
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
+    } else {
+        res.status(400).send({error: "An error occurred"});
     }
-    else {
-        res.status(204).send();
+    // Call User.update
+    User.updateUser(email, req.body, function (message, success) {
+
+        if (!success) {
+            res.status(400).send({error: message});
+        }
+        else {
+
+            io.emit('update_user', {email: email, body: req.body});
+
+            res.format({
+                html: function () {
+                    var resp = "";
+                    resp += "<div>";
+                    resp += "<h2>" + success.name + "</h2>";
+                    resp += "<h4>" + success.email + "</h4>";
+                    resp += "</div>";
+                    res.status(200).send(resp);
+                },
+                json: function () {
+                    res.status(200).send({name: success.name, email: success.email});
+                }
+            })
+        }
+    });
+});
+
+/**
+ * @swagger
+ * /users/:name:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     description: Deletes a single user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - email: user
+ *         description: User's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ */
+router.delete('/:email', function (req, res) {
+    const io = req.app.get('io');
+
+    var email;
+    if (req.params.email) {
+        email = req.params.email;
+    } else {
+        res.status(400).send({error: "An error occurred"});
     }
-}
+
+    User.deleteUser(email, function (errors) {
+
+        if (errors) {
+            res.status(500).send("Error deleting " + email);
+        }
+        else {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p> Deleted succesfully </p>');
+                },
+
+                json: function () {
+                    res.status(200).send({message: "Deleted succesfully"});
+                }
+            })
+        }
+    });
+});
 
 //export this router to use in our index.js
 module.exports = router;

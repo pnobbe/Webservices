@@ -69,7 +69,7 @@ router.get('/', function (req, res, next) {
                         resp += "<h3>" + data.waypoint.name + "</h3>";
                         resp += "<h2>" + data.waypoint.id + "</h2>";
 
-                        if (el.lat) {
+                        if (data.lat) {
                             resp += "<h3>" + data.address + "</h3>";
                             resp += "<h4 class='LAT'>" + data.lat + "</h4>";
                             resp += "<h4 class='LNG'>" + data.lng + "</h4>";
