@@ -5,7 +5,7 @@ const Regex = require('../service/regex');
 console.log('Creating races schema');
 
 var raceSchema = new mongoose.Schema({
-    name: {type: String, required: true, index: true, unique: true},
+    name: {type: String, required: true, unique: true},
     city: {type: String, required: true},
     owner: {
         type: mongoose.Schema.Types.ObjectId,
@@ -96,6 +96,7 @@ raceSchema.statics.updateRace = function (name, body, done) {
             if (!race)
                 return done("race does not exist", null);
 
+            race.name = body.name ? body.name : race.name;
             race.city = body.city ? body.city : race.city;
             race.owner = body.owner ? body.owner : race.owner;
             race.participants = body.participants ? body.participants : [];
