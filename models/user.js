@@ -202,8 +202,23 @@ userSchema.statics.createNewFacebook = function (token, profile, done) {
         }
     )
     ;
-}
-;
+};
+
+userSchema.statics.printJSON = function (user) {
+
+    return {
+        _id: user._id,
+        email: user.email,
+        name: user.name
+    }
+};
+
+
+userSchema.statics.printHTML = function (user) {
+
+    return "<div> <p>" + user._id + " </p>  <p>" + user.email + " </p> <p>" + user.name + " </p></div>";
+
+};
 
 userSchema.virtual('isAdmin').get(function () {
     return this.role.includes("admin");

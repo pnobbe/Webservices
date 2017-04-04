@@ -145,6 +145,98 @@ raceSchema.statics.updateRace = function (name, body, done) {
 }
 ;
 
+raceSchema.statics.printJSON = function (race) {
+    var obj = {
+        name: race.name,
+        city: race.city,
+        creationdate: race.creationDate,
+        startTime: race.startTime,
+        stopTime: race.stopTime
+
+    };
+    obj.owner = race.owner;
+    if (race.owner != null && race.owner instanceof User) {
+        obj.owner = User.printJSON(race.owner);
+    }
+
+    obj.participants = race.participants;
+    if (race.participants != null && race.participants.length > 0 && race.participants[0] instanceof User) {
+        obj.participants = race.participants.map(User.printJSON);
+    }
+    obj.waypoints = race.waypoints;
+
+    if (race.waypoints != null && race.waypoints.length > 0 && race.waypoints[0].waypoint && race.waypoints[0].waypoint instanceof Waypoint) {
+        obj.waypoints = race.waypoints.map(data => {
+
+            var waypoint = Waypoint.printJSON(data.waypoint);
+
+            return {
+                waypoint: waypoint,
+                participants: data.passed_participants.map(data => {
+
+                    if (data.user instanceof User) {
+                        return {
+                            user: User.printJSON(data.user),
+                            time: data.time
+                        }
+                    }
+                    else {
+                        return data;
+                    }
+                })
+
+            }
+        });
+    }
+
+    return obj;
+};
+
+raceSchema.statics.printHTML = function (data) {
+
+    var resp = "<div>";
+    resp += "<p>" + (data.name ? data.name : "-") + "</p>";
+    resp += "<p>" + (data.city ? data.city : "-") + "</p>";
+    resp += "<p>" + (data.creationdate ? data.creationdate.toString() : "-") + "</p>";
+    resp += "<p>" + (data.startTime ? data.startTime.toString() : "-") + "</p>";
+    resp += "<p>" + (data.stopTime ? data.stopTime.toString() : "-") + "</p>";
+
+    // owner
+    resp += "<div>" + (data.owner instanceof User ? User.printHTML(data.owner) : data.owner) + "</div>";
+
+    // participants
+    if (data.participants != null && data.participants.length > 0 && data.participants[0] instanceof User) {
+        resp += "<div>";
+        data.participants.forEach(el => {
+            resp = User.printJSON(el)
+        });
+        resp += "</div>";
+    }
+
+    // waypoints
+    if (data.waypoints != null && data.waypoints.length > 0 && data.waypoints[0].waypoint && data.waypoints[0].waypoint instanceof Waypoint) {
+        data.waypoints.forEach(data => {
+            resp += "<div>";
+            resp += Waypoint.printHTML(data.waypoint);
+
+
+            data.passed_participants.forEach(data => {
+
+                if (data.user instanceof User) {
+                    resp += "<div>";
+                    User.printHTML(data.user);
+                    resp += "<p>" + data.time.toString() + "</p>";
+                    resp += "</div>";
+                }
+            });
+            resp += "</div>";
+        });
+    }
+
+    resp += "</div>";
+    return resp;
+};
+
 
 raceSchema.statics.createNew = function (body, done) {
 

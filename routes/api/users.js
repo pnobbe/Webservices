@@ -51,17 +51,12 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(el => {
-                        return {name: el.name, email: el.email};
-                    }));
+                    res.status(200).send(data.map(User.printJSON));
                 },
                 html: function () {
                     let resp = "<div>";
                     data.forEach(function (data) {
-                        resp += "<div>";
-                        resp += "<h2>" + data.name + "</h2>";
-                        resp += "<h4>" + data.email + "</h4>";
-                        resp += "</div>";
+                        resp += User.printHTML(data);
                     });
                     resp += "</div>";
                     res.status(200).send(resp);
@@ -112,7 +107,7 @@ router.post('/', function (req, res, next) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> User has been created successfully. </p>');
+                    res.status(200).send('<p>User has been created successfully.</p>');
                 },
 
                 json: function () {
@@ -169,22 +164,16 @@ router.get('/:email', function (req, res) {
         res.format({
             json: function () {
                 if (user) {
-                    res.status(200).send({name: user.name, email: user.email});
+                    res.status(200).send(User.printJSON(user));
                 } else {
                     res.status(400).send({error: "No user found with that email."});
                 }
             },
             html: function () {
                 if (user) {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + user.name + "</h2>";
-                    resp += "<h4>" + user.email + "</h4>";
-                    resp += "</div>";
-
-                    res.status(200).send(resp);
+                    res.status(200).send(User.printHTML(user));
                 } else {
-                    res.status(400).send('<strong>No user found with that email. </strong>');
+                    res.status(400).send('<strong>No user found with that email.</strong>');
                 }
             }
         });
@@ -234,15 +223,10 @@ router.put('/:email', function (req, res) {
 
             res.format({
                 html: function () {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + success.name + "</h2>";
-                    resp += "<h4>" + success.email + "</h4>";
-                    resp += "</div>";
-                    res.status(200).send(resp);
+                    res.status(200).send(User.printHTML(success));
                 },
                 json: function () {
-                    res.status(200).send({name: success.name, email: success.email});
+                    res.status(200).send(User.printJSON(success));
                 }
             })
         }
@@ -290,7 +274,7 @@ router.delete('/:email', function (req, res) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> Deleted succesfully </p>');
+                    res.status(200).send('<p>Deleted succesfully</p>');
                 },
 
                 json: function () {

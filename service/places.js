@@ -36,8 +36,7 @@ module.exports = class Places {
                 waypoint.id = entree.place_id;
                 return waypoint;
             });
-            return self.waypointsToCoordinates(promises);
-            s
+            return self.createWaypoints(promises);
         });
     }
 
@@ -69,7 +68,7 @@ module.exports = class Places {
                 waypoint.id = entree.place_id;
                 return waypoint;
             });
-            return self.waypointsToCoordinates(promises);
+            return self.createWaypoints(promises);
         });
 
     }
@@ -113,37 +112,8 @@ module.exports = class Places {
             });
     }
 
-    resultToWayPoints(res) {
 
-        if (res.statusCode != 200 || res.body.status != 'OK') {
-            return [];
-        }
-
-        var arr = res.body.results;
-        if (Array.isArray(arr)) {
-
-
-            return arr.map(element => {
-
-                // element to Waypoint
-
-                let waypoint = new Waypoint();
-                waypoint.id = element.place_id;
-                waypoint.name = waypoint.name ? waypoint.name : element.name;
-                return {
-                    waypoint: waypoint,
-                    lat: element.geometry.location.lat,
-                    lng: element.geometry.location.lng,
-                    address: element.vicinity
-                };
-            });
-        }
-        else {
-            return [];
-        }
-    }
-
-    waypointsToCoordinates(waypoints) {
+    createWaypoints(waypoints) {
 
         var self = this;
         if (!Array.isArray(waypoints)) {

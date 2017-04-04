@@ -49,7 +49,8 @@
     "socket.io-client": "^1.7.3",
     "swagger-express-mw": "^0.1.0",
     "swagger-jsdoc": "^1.9.2",
-    "tableify": "^1.0.0"
+    "tableify": "^1.0.0",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "should": "^7.1.0",

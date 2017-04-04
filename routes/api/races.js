@@ -3,7 +3,8 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const Race = mongoose.model('Race');
-
+const User = mongoose.model('User');
+const Waypoint = mongoose.model('Waypoint');
 /**
  * @swagger
  * definitions:
@@ -41,14 +42,12 @@ router.get('/', function (req, res, next) {
         else {
             res.format({
                 json: function () {
-                    res.status(200).send(data);
+                    res.status(200).send(data.map(Race.printJSON));
                 },
                 html: function () {
                     let resp = "<div>";
                     data.forEach(function (data) {
-                        resp += "<div>";
-                        resp += "<h2>" + data.name + "</h2>";
-                        resp += "</div>";
+                        resp += Race.printHTML(data);
                     });
                     resp += "</div>";
                     res.status(200).send(resp);
@@ -102,7 +101,7 @@ router.post('/', function (req, res, next) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> Race has been created successfully. </p>');
+                    res.status(200).send('<p>Race has been created successfully.</p>');
                 },
 
                 json: function () {
@@ -161,21 +160,16 @@ router.get('/:name', function (req, res) {
         res.format({
             json: function () {
                 if (race) {
-                    res.status(200).send(race);
+                    res.status(200).send(Race.printJSON(race));
                 } else {
                     res.status(400).send({error: "No race found with that name."});
                 }
             },
             html: function () {
                 if (race) {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + race.name + "</h2>";
-                    resp += "</div>";
-
-                    res.status(200).send(resp);
+                    res.status(200).send(Race.printHTML(race));
                 } else {
-                    res.status(400).send('<strong>No race found with that name. </strong>');
+                    res.status(400).send('<strong>No race found with that name.</strong>');
                 }
             }
         });
@@ -183,6 +177,7 @@ router.get('/:name', function (req, res) {
 
 
 });
+
 
 /**
  * @swagger
@@ -225,14 +220,10 @@ router.put('/:name', function (req, res) {
 
             res.format({
                 html: function () {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + success.name + "</h2>";
-                    resp += "</div>";
-                    res.status(200).send(resp);
+                    res.status(200).send(Race.printHTML(success));
                 },
                 json: function () {
-                    res.status(200).send(success);
+                    res.status(200).send(Race.printJSON(success));
                 }
             })
         }
@@ -279,7 +270,7 @@ router.delete('/:name', function (req, res) {
             io.emit('delete_race', name);
             res.format({
                 html: function () {
-                    res.status(200).send('<p> Deleted succesfully </p>');
+                    res.status(200).send('<p>Deleted succesfully</p>');
                 },
 
                 json: function () {
