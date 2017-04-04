@@ -22,6 +22,8 @@ const session = require('express-session');
 const configDB = require('./config/db');
 const passportSocketIo = require("passport.socketio");
 const MongoStore = require('connect-mongo')(session);
+const socketio = require( "socket.io" );
+
 
 const config = require('./config/config');
 
@@ -186,14 +188,10 @@ console.log("Done.");
 
 console.log("Opening sockets... ");
 
-// Run server to listen on port
-const server = app.listen(config.socketPort, () => {
-    console.log('Sockets listening on *:' + config.socketPort);
-});
+// Socket.io
+var io           = socketio();
+app.io           = io;
 
-const io = require('socket.io')(server);
-
-app.set('io', io);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('static'));
@@ -251,7 +249,7 @@ io.on('connection', (socket) => {
     });
 
 });
-
+app.set('io', io);
 console.log("Done.");
 
 /**
