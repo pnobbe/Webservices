@@ -95,7 +95,8 @@ function updateRace(race) {
         url: "/api/races/" + race.name,
         type: "PUT",
         dataType: 'json',
-        data: race,
+        contentType: 'application/json',
+        data: JSON.stringify(race),
         success: function (data) {
             console.log(data);
         }, error: function (data) {
