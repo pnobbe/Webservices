@@ -75,11 +75,11 @@ function selectRace(race) {
                         createWaypoint(marker.waypoint, function (data) {
                             if (data.status != null) {
                                 getWaypoint(marker.waypoint.id, function (data) {
-                                    race.waypoints.push(data)
+                                    race.waypoints.push(data._id);
                                     updateRace(race);
                                 });
                             } else {
-                                race.waypoints.push(data.waypoint);
+                                race.waypoints.push(data.waypoint._id);
                                 updateRace(race);
                             }
                             socket.emit('remove_marker', {roomname: race.name, waypointid: marker.waypoint.id})

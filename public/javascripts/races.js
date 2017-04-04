@@ -1,12 +1,12 @@
 let raceList = [];
 
 $.ajax({
-    url: "/api/races",
+    url: "/api/races/all",
     type: "GET",
     dataType: 'json',
     success: function (data) {
         console.log(data);
-        data.forEach(function (race) {
+        data.result.forEach(function (race) {
             addRace(race);
         });
         $("#raceList").append(data);
