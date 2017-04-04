@@ -1,5 +1,5 @@
 const port = 3001;
-const socket = io.connect('http://127.0.0.1:3001');
+const socket = io.connect('http://127.0.0.1:' + port);
 
 socket.on('connect', function () {
     console.log("Successfully connected to socket on port " + port);

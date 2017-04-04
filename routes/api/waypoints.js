@@ -40,6 +40,7 @@ const Waypoint = mongoose.model('Waypoint');
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/', function (req, res, next) {
+    console.log(req.user);
 
     Waypoint.findAll(function (errors, data) {
 
@@ -71,7 +72,6 @@ router.get('/', function (req, res, next) {
             });
         }
     });
-
 });
 
 /**
@@ -98,18 +98,17 @@ router.get('/', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
-
     // Call User.create
     Waypoint.createNew(req.body, function (errors, waypoint, info) {
 
         if (errors) {
-            res.status(400).send({error: "An error occurred"});
+            res.status(500).send({error: "An error occurred"});
         }
         else if (info) {
-            res.status(400).send({error: info});
+            res.status(500).send({error: info});
         }
         else {
-
+            
             io.emit('new_waypoint', {body: req.body});
 
             res.format({

@@ -195,7 +195,6 @@ raceSchema.statics.printJSON = function (race) {
 
 raceSchema.statics.createNew = function (body, done) {
 
-
     if (!body.name || !body.owner || !body.city) {
         return done(null, false, "Missing input data.");
     }

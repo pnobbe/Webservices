@@ -23,13 +23,7 @@ const configDB = require('./config/db');
 const passportSocketIo = require("passport.socketio");
 const MongoStore = require('connect-mongo')(session);
 
-
-
-const config = {
-    appRoot: __dirname, // required config
-    appOrigin: "127.0.0.1:3000" // "https://restracer.herokuapp.com"
-};
-
+const config = require('./config/config');
 /**
  * Swagger
  */
@@ -40,7 +34,7 @@ const swaggerDefinition = {
         version: '0.0.1',
         description: 'The official ReST-Race API',
     },
-    host: config.appOrigin,
+    host: config.url,
     basePath: '/api',
     produces: ["application/json", "text/html"],
 };
@@ -134,7 +128,6 @@ const user = new ConnectRoles({
 });
 app.use(user.middleware());
 
-
 user.use(function (req, action) {
     req.session.returnTo = req.path;
     if (!req.isAuthenticated()) return action === 'access home page';
@@ -186,9 +179,9 @@ console.log("Done.");
 
 console.log("Opening sockets... ");
 
-// Run server to listen on port 3001.
-const server = app.listen(3001, () => {
-    console.log('Sockets listening on *:3001');
+// Run server to listen on port
+const server = app.listen(config.socketPort, () => {
+    console.log('Sockets listening on *:' + config.socketPort);
 });
 
 const io = require('socket.io')(server);
@@ -220,8 +213,6 @@ io.use(passportSocketIo.authorize({
 }));
 
 function onAuthorizeSuccess(data, accept){
-    console.log('successful connection to socket.io');
-
     // The accept-callback still allows us to decide whether to
     // accept the connection or not.
     accept(null, true);
@@ -230,8 +221,7 @@ function onAuthorizeSuccess(data, accept){
 function onAuthorizeFail(data, message, error, accept){
     if(error)
         throw new Error(message);
-    console.log('failed connection to socket.io:', message);
-
+    console.log('Failed connection to socket.io:', message);
     // We use this callback to log all of our failed connections.
     accept(null, false);
 }
@@ -247,6 +237,9 @@ io.on('connection', (socket) => {
         connectedClients--;
         console.log('SOCKET.IO: Client disconnected. Total clients: ' + connectedClients);
     });
+
+    console.log(socket.request.user);
+
 
     socket.on('new_waypoint', function () {
         waypointCount++;

@@ -36,17 +36,13 @@ $(".btn-new-race").click(function () {
 
     $('#name').val("");
     $('#city').val("");
-    let body = { city: city, name: name, owner: "test" };
-    /*
+    let body = { city: city, name: name };
+
     $.ajax({
         url: "/api/races",
         type: "POST",
         data: body,
-        success: function (data) {
-            console.log(data);
-        }
     });
-    */
 });
 
 $('#raceList').on('click', '.btn-delete', function () {
