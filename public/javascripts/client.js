@@ -1,9 +1,5 @@
 const port = 3001;
-
-console.log(document.cookie);
-
-
-const socket = io.connect('//' + window.location.host);
+const socket = io.connect('http://127.0.0.1:3001');
 
 socket.on('connect', function () {
     console.log("Successfully connected to socket on port " + port);
@@ -26,19 +22,3 @@ socket.on('data', function (message) {
 socket.on('disconnect', function () {
     console.log("Disconnected from socket on port " + port);
 });
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}

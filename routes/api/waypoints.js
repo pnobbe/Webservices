@@ -40,7 +40,6 @@ const Waypoint = mongoose.model('Waypoint');
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/', function (req, res, next) {
-    const io = req.app.get('io');
 
     Waypoint.findAll(function (errors, data) {
 
@@ -122,7 +121,7 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('delete_user', {email: email});
+            io.emit('new_waypoint', { body: req.body });
 
             res.format({
                     html: function () {
@@ -179,8 +178,6 @@ router.post('/', function (req, res, next) {
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/:id', function (req, res) {
-    const io = req.app.get('io');
-
     var id;
     if (req.params.id) {
         id = req.params.id;
