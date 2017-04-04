@@ -193,7 +193,7 @@ raceSchema.statics.printJSON = function (race) {
         obj.waypoints = race.waypoints.map(data => {
 
             if (!data.waypoint || !(data.waypoint instanceof Waypoint)) {
-                return {};
+                return data;
             }
             var waypoint = Waypoint.printJSON(data.waypoint);
 
@@ -255,7 +255,7 @@ raceSchema.statics.printHTMLParticipants = function (data) {
     }
     resp = "</div>";
     return resp;
-}
+};
 
 raceSchema.statics.printHTMLWaypoints = function (data) {
 
@@ -268,6 +268,9 @@ raceSchema.statics.printHTMLWaypoints = function (data) {
         data.forEach(data => {
 
             if (!data.waypoint) {
+                resp += "<div>";
+                resp += data;
+                resp += "</div>";
                 return;
             }
 

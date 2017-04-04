@@ -104,9 +104,9 @@ router.get('/', function (req, res) {
  *     description: Updates patricipants
  *     produces: application/json
  *     parameters:
- *       name: race
+ *       name: participants
  *       in: body
- *       description: Fields for the Race resource
+ *       description: list of users
  *       schema:
  *         type: object
  *         $ref: '#/definitions/Race'
@@ -188,7 +188,6 @@ router.delete('/', function (req, res) {
                 html: function () {
                     res.status(200).send('<p>participants have been removed successfully.</p>');
                 },
-
                 json: function () {
                     res.status(200).send({
                         message: "participants have been removed successfully",

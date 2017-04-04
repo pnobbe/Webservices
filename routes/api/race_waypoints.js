@@ -19,6 +19,7 @@ function parse(req, res, callback) {
     Race.findByName(name, function (errors, data) {
         if (errors) {
             res.status(400).send({error: "An error occurred."});
+            return;
         }
         let race = data;
         if (!race) {
@@ -128,6 +129,7 @@ router.put('/', function (req, res) {
 
         if (!success) {
             res.status(400).send({error: message});
+            return;
         }
         else {
 

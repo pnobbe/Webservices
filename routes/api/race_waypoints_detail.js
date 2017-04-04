@@ -18,6 +18,7 @@ function parse(req, res, callback) {
     Race.findByName(name, function (errors, data) {
         if (errors) {
             res.status(400).send({error: "An error occurred."});
+            return;
         }
         let race = data;
         if (!race) {
@@ -106,14 +107,18 @@ router.get('/', function (req, res) {
                 }
             });
         }
-        res.format({
-            json: function () {
-                res.status(200).send(data);
-            },
-            html: function () {
-                res.status(200).send(Race.printHTMLWaypoints(data));
-            }
-        });
+        else {
+            res.format({
+                json: function () {
+                    res.status(200).send(data);
+
+                },
+                html: function () {
+                    res.status(200).send(Race.printHTMLWaypoints(data));
+                }
+            });
+        }
+
     });
 
 
@@ -137,10 +142,55 @@ router.get('/', function (req, res) {
  *         $ref: '#/definitions/Race'
  *     responses:
  *       200:
- *         description: Updated race
+ *         description: Updated passed people
  */
 router.put('/', function (req, res) {
+    const io = req.app.get('io');
 
+    parse(req, res, data => {
+
+        // filter waypoints object
+        var id;
+        if (req.params.id) {
+            id = req.params.id;
+        } else {
+            res.status(400).send({error: "An error occurred"});
+            return;
+        }
+
+        var newWaypoints = data.waypoints.filter(data => {
+            if (!data.waypoint) {
+                return true;
+            }
+            return data.waypoint.id != id;
+        });
+
+        newWaypoints.push(req.body);
+
+        // PUT in race (change passed people)
+        Race.updateRace(data.name, {waypoints: newWaypoints}, function (message, success) {
+
+                if (!success) {
+                    res.status(400).send({error: message});
+                }
+                else {
+
+                    io.to(data.name).emit('update_race_data', success);
+                    io.emit('update_race', success);
+
+                    res.format({
+                        html: function () {
+                            res.status(200).send({message: "Put successfull"});
+                        },
+                        json: function () {
+                            res.status(200).send("<p>Put successfull</p>");
+                        }
+                    })
+                }
+            }
+        );
+
+    });
 });
 
 /**
