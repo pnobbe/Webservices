@@ -84,7 +84,7 @@ router.get('/', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
-
+    console.log(req.body);
     if (req.body.user == null) {
         req.body.user = req.user;
     }
