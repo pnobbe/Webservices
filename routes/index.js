@@ -1,4 +1,4 @@
-module.exports = function (app, passport, user) {
+module.exports = function (app, passport) {
 
 
     // HOW TO USE API:
@@ -53,7 +53,7 @@ module.exports = function (app, passport, user) {
     /**
      * API
      */
-    app.use('/api', require('./api')(user));
+    app.use('/api', require('./api')(app.get('user')));
 
     /**
      * AUTHENTICATE (FIRST LOGIN)
@@ -65,7 +65,7 @@ module.exports = function (app, passport, user) {
      */
     // We will want this protected so you have to be logged in to visit
     // We will use route middleware to verify this (the isLoggedIn function)
-    app.get('/profile', user.can('access profile page'), function (req, res) {
+    app.get('/profile', app.get('user').can('access profile page'), function (req, res) {
         res.render('profile.ejs', {
             user: req.user,// get the user out of session and pass to template
         });
@@ -74,7 +74,7 @@ module.exports = function (app, passport, user) {
     /**
      * ADMIN PAGE
      */
-    app.get('/admin', user.is('admin'), function (req, res) {
+    app.get('/admin', app.get('user').is('admin'), function (req, res) {
         res.render('admin.ejs'); // load the index.ejs file
     });
 

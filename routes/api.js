@@ -4,7 +4,7 @@ const router = express.Router();
 module.exports = function (user) {
 
     router.use("/races", require('./api/races'));
-    router.use("/users", require('./api/users'));
+    router.use("/users", user.is('admin'), require('./api/users'));
     router.use("/waypoints", require('./api/waypoints'));
 
     // Api docs

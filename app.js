@@ -24,10 +24,10 @@ const passportSocketIo = require("passport.socketio");
 const MongoStore = require('connect-mongo')(session);
 
 const config = require('./config/config');
+
 /**
  * Swagger
  */
-
 const swaggerDefinition = {
     info: {
         title: 'ReST Race API',
@@ -153,6 +153,7 @@ user.use(function (req) {
     }
 });
 
+app.set('user', user);
 
 console.log("Done.");
 

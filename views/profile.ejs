@@ -5,6 +5,7 @@
 <body>
 <div class="container">
     <div class="row">
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
 
         <% if (user.local.email) { %>
         <!-- LOCAL INFORMATION -->
@@ -19,7 +20,6 @@
                     <strong>email</strong>: <%= user.local.email %><br>
                     <strong>password</strong>: <%= user.local.password %>
                 </p>
-                <a href="/logout" class="btn btn-default btn-sm">Logout</a>
             </div>
         </div>
         <% } %>
