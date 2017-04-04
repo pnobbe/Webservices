@@ -202,9 +202,12 @@ raceSchema.statics.printJSON = function (race) {
     return obj;
 };
 
-raceSchema.statics.printHTML = function (data) {
+raceSchema.statics.printHTML = function (data, participants, waypoints) {
+
 
     var resp = "<div>";
+
+
     resp += "<p>" + (data.name ? data.name : "-") + "</p>";
     resp += "<p>" + (data.city ? data.city : "-") + "</p>";
     resp += "<p>" + (data.creationdate ? data.creationdate.toString() : "-") + "</p>";
@@ -214,6 +217,17 @@ raceSchema.statics.printHTML = function (data) {
     // owner
     resp += "<div>" + (data.owner instanceof User ? User.printHTML(data.owner) : data.owner) + "</div>";
 
+    resp += (mongoose.model('Race', raceSchema)).printHTMLParticipants(data);
+    resp += (mongoose.model('Race', raceSchema)).printHTMLWaypoints(data.waypoints);
+
+
+    resp += "</div>";
+    return resp;
+};
+
+
+raceSchema.statics.printHTMLParticipants = function (data) {
+    var resp = "<div>";
     // participants
     if (data.participants != null && data.participants.length > 0 && data.participants[0] instanceof User) {
         resp += "<div>";
@@ -222,10 +236,18 @@ raceSchema.statics.printHTML = function (data) {
         });
         resp += "</div>";
     }
+    resp = "</div>";
+    return resp;
+}
+
+raceSchema.statics.printHTMLWaypoints = function (data) {
+
+
+    var resp = "<div>";
 
     // waypoints
-    if (data.waypoints != null && data.waypoints.length > 0 && data.waypoints[0].waypoint && data.waypoints[0].waypoint instanceof Waypoint) {
-        data.waypoints.forEach(data => {
+    if (data != null && data.length > 0 && data[0].waypoint && data[0].waypoint instanceof Waypoint) {
+        data.forEach(data => {
             resp += "<div>";
             resp += Waypoint.printHTML(data.waypoint);
 

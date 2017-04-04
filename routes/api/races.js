@@ -319,5 +319,10 @@ router.delete('/:name', function (req, res) {
     });
 });
 
+
+router.use('/:name/participants', require('./race_participants'));
+router.use('/:name/waypoints', require('./race_waypoints'));
+
+
 //export this router to use in our index.js
 module.exports = router;
