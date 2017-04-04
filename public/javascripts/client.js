@@ -1,5 +1,5 @@
 //const socket = io.connect('http://127.0.0.1:8080', {secure: true});
-const socket = io.connect();
+const socket = io.connect("https://restracer.herokuapp.com", {secure: true});
 
 socket.on('connect', function () {
     console.log("Successfully connected to socket on port ");
