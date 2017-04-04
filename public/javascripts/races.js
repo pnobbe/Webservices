@@ -20,6 +20,7 @@ socket.on('new_race', function (race) {
 });
 
 socket.on('delete_race', function (id) {
+    console.log(id);
     $("#raceList").find('#' + id).remove();
 });
 
