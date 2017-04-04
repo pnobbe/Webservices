@@ -129,7 +129,7 @@ module.exports = class Places {
 
                 let waypoint = new Waypoint();
                 waypoint.id = element.place_id;
-                waypoint.name = element.name;
+                waypoint.name = waypoint.name ? waypoint.name : element.name;
                 return {
                     waypoint: waypoint,
                     lat: element.geometry.location.lat,
@@ -160,7 +160,7 @@ module.exports = class Places {
                 if (data == null || data.body == null || data.body.result == null) {
                     return {waypoint: waypoint};
                 }
-                waypoint.name = data.body.result.name;
+                waypoint.name = waypoint.name ? waypoint.name : data.body.result.name;
                 var o =
                 {
                     waypoint: waypoint,
