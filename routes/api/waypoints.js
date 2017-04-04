@@ -135,17 +135,13 @@ router.post('/', function (req, res, next) {
             res.status(400).send({error: info});
         }
         else {
-
             io.emit('new_waypoint', {body: req.body});
 
             res.format({
                     html: function () {
                         res.status(200).send('<p>Waypoint has been created successfully.</p>');
                     },
-
                     json: function () {
-
-
                         res.status(200).send({
                             message: "Waypoint has been created successfully.",
                             waypoint: Waypoint.printJSON(waypoint)
@@ -199,17 +195,13 @@ router.get('/:id', function (req, res) {
         let waypoint = data;
         res.format({
             json: function () {
-                console.log("json");
                 if (waypoint) {
-
                     res.status(200).send(Waypoint.printJSON(waypoint));
-
                 } else {
                     res.status(400).send({error: "No waypoint found with that id."});
                 }
             }.bind(res),
             html: function () {
-                console.log("html");
                 if (waypoint) {
 
                     res.status(200).send(Waypoint.printHTML(waypoint));
@@ -260,19 +252,14 @@ router.put('/:id', function (req, res) {
             res.status(400).send({error: message});
         }
         else {
-
             io.emit('update_waypoint', {id: id, body: req.body});
 
             res.format({
                 json: function () {
-
                     res.status(200).send(Waypoint.printJSON(waypoint));
-
                 },
                 html: function () {
-
                     res.status(200).send(Waypoint.printHTML(waypoint));
-
                 }
             })
         }
@@ -316,13 +303,12 @@ router.delete('/:id', function (req, res) {
         }
         else {
 
-            io.emit('delete_waypoint', {id: id});
+            io.emit('delete_waypoint', id);
 
             res.format({
                 html: function () {
                     res.status(200).send('<p>Deleted succesfully</p>');
                 },
-
                 json: function () {
                     res.status(200).send({message: "Deleted succesfully"});
                 }

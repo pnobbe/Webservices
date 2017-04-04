@@ -71,13 +71,13 @@ console.log("Initializing Mongoose... ");
 // Data Access Layer
 if (configDB.testing) {
     mongoose.connect(configDB.test_url);
-    
+
 }
 else {
     mongoose.connect(configDB.url);
 }
 
-const sessionStore = new MongoStore({ mongooseConnection: mongoose.connection });
+const sessionStore = new MongoStore({mongooseConnection: mongoose.connection});
 
 
 mongoose.Promise = require('q').Promise;
@@ -103,7 +103,13 @@ console.log("Initializing Passport... ");
 require('./routes/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
-app.use(session({key: 'express.sid', secret: 'GerardJolingIsEenBaas', store: sessionStore, resave: true, saveUninitialized: false})); // session secret
+app.use(session({
+    key: 'express.sid',
+    secret: 'GerardJolingIsEenBaas',
+    store: sessionStore,
+    resave: true,
+    saveUninitialized: false
+})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
@@ -187,58 +193,33 @@ const server = app.listen(config.socketPort, () => {
 const io = require('socket.io')(server);
 
 
-
 app.set('io', io);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('static'));
 
-let connectedClients = 0;
-let usersCount = 0;
-let waypointCount = 0;
-let raceCount = 0;
-let users = [];
-let waypoints = [];
-let races = [];
-
-
 //With Socket.io >= 1.0
 io.use(passportSocketIo.authorize({
     cookieParser: cookieParser,       // the same middleware you registrer in express
-    key:          'express.sid',       // the name of the cookie where express/connect stores its session_id
-    secret:       'GerardJolingIsEenBaas',    // the session_secret to parse the cookie
-    store:        sessionStore,        // we NEED to use a sessionstore. no memorystore please
-    success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
-    fail:         onAuthorizeFail,     // *optional* callback on fail/error - read more below
+    key: 'express.sid',       // the name of the cookie where express/connect stores its session_id
+    secret: 'GerardJolingIsEenBaas',    // the session_secret to parse the cookie
+    store: sessionStore,        // we NEED to use a sessionstore. no memorystore please
+    success: onAuthorizeSuccess,  // *optional* callback on success - read more below
+    fail: onAuthorizeFail,     // *optional* callback on fail/error - read more below
 }));
 
-function onAuthorizeSuccess(data, accept){
-    // The accept-callback still allows us to decide whether to
-    // accept the connection or not.
+function onAuthorizeSuccess(data, accept) {
     accept(null, true);
 }
 
-function onAuthorizeFail(data, message, error, accept){
-    if(error)
+function onAuthorizeFail(data, message, error, accept) {
+    if (error)
         throw new Error(message);
-    console.log('Failed connection to socket.io:', message);
-    // We use this callback to log all of our failed connections.
     accept(null, false);
 }
 
 // Set socket.io listeners.
 io.on('connection', (socket) => {
-    connectedClients++;
-    console.log('SOCKET.IO: Client connected. Total clients: ' + connectedClients);
-
-    socket.broadcast.emit('new_client', {id: socket.id, count: connectedClients});
-
-    socket.on('disconnect', () => {
-        connectedClients--;
-        console.log('SOCKET.IO: Client disconnected. Total clients: ' + connectedClients);
-    });
-
-    console.log(socket.request.user);
 
     socket.on('join_room', function (name) {
         socket.join(name);
@@ -249,24 +230,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('remove_marker', function (data) {
-        console.log(data.waypointid);
-       io.sockets.in(data.roomname).emit('remove_marker', data.waypointid);
-    });
-
-    socket.on('new_waypoint', function () {
-        waypointCount++;
-        app.get('/api/users', function (req, res) {
-            console.log(req);
-            res.send(req);
-        });
-
-        waypoints.push(waypointCount);
-        io.sockets.emit("new_waypoint", waypointCount);
-    });
-
-    socket.on('delete_waypoint', function (id) {
-        waypoints.splice(id - 1, 1);
-        io.sockets.emit("delete_waypoint", id);
+        console.log("WAYPOOINT");
+        console.log(data.waypoint);
+        io.sockets.in(data.roomname).emit('remove_marker', data.waypoint);
     });
 
     socket.on('new_race', function () {
@@ -278,12 +244,6 @@ io.on('connection', (socket) => {
     socket.on('delete_race', function (id) {
         races.splice(id - 1, 1);
         io.sockets.emit("delete_race", id);
-    });
-
-    socket.on('new_user', function () {
-        userCount++;
-        users.push(userCount);
-        io.sockets.emit("new_user", userCount);
     });
 
     socket.on('delete_user', function (id) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-module.exports = function () {
+module.exports = function (user) {
 
     router.use("/races", require('./api/races'));
     router.use("/users", require('./api/users'));

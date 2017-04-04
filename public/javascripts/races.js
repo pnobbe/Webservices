@@ -5,11 +5,9 @@ $.ajax({
     type: "GET",
     dataType: 'json',
     success: function (data) {
-        console.log(data);
         data.result.forEach(function (race) {
             addRace(race);
         });
-        $("#raceList").append(data);
     },
     error: function (data) {
         console.log(data);
@@ -65,10 +63,8 @@ $('#raceList').on('click', '.btn-delete', function (event) {
 
 $('#raceList').on('click', '.btn-select', function (event) {
     let race = raceList.filter(function (obj) {
-        console.log(obj.name + " " + $(event.target).closest("li").prop('id'));
         return obj.name === $(event.target).closest("li").prop('id');
     })[0];
-    console.log(race);
     selectRace(race);
 });
 

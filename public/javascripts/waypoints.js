@@ -11,6 +11,17 @@ function selectRace(race) {
     curRace = race;
     socket.emit('join_room', curRace.name);
 
+
+    getWaypointsFromRace(race.name, function (data) {
+        if (data != null) {
+            $("#waypointList").empty();
+            waypointList = [];
+            data.forEach(function (waypoint) {
+                addWaypoint(waypoint);
+            });
+        }
+    });
+
     /*
      $.ajax({
      url: "/api/waypoints/search/nearby/" + race.city + "/cafe",
@@ -49,8 +60,6 @@ function selectRace(race) {
                 // Try HTML5 geolocation.
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function (position) {
-
-
                         infoWindow.setPosition(pos);
                         infoWindow.setContent('Race location:' + race.city);
                         map.setCenter(pos);
@@ -62,30 +71,9 @@ function selectRace(race) {
                     handleLocationError(false, infoWindow, map.getCenter());
                 }
                 data.forEach(function (waypoint) {
-                    var marker = new google.maps.Marker({
-                        position: {lat: waypoint.lat, lng: waypoint.lng},
-                        map: map,
-                        title: waypoint.name,
-                        icon: "http://hangoverhacks.com/wp-content/uploads/2017/03/cropped-beer-32x32.png",
-                        waypoint: waypoint
-                    });
-                    markers[waypoint.id] = marker;
-
-                    marker.addListener('click', function () {
-                        createWaypoint(marker.waypoint, function (data) {
-                            if (data.status != null) {
-                                getWaypoint(marker.waypoint.id, function (data) {
-                                    race.waypoints.push(data);
-                                    updateRace(race);
-                                });
-                            } else {
-                                race.waypoints.push(data.waypoint);
-                                updateRace(race);
-                            }
-                            socket.emit('remove_marker', {roomname: race.name, waypointid: marker.waypoint.id})
-                        });
-                    });
-
+                    if (waypointList[waypoint.id] == null) {
+                        addMarker(waypoint);
+                    }
                 });
 
                 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -100,21 +88,16 @@ function selectRace(race) {
 }
 
 socket.on('new_waypoint', function (waypoint) {
-    console.log(waypoint);
-    addWaypoint(waypoint);
 });
 
 socket.on('delete_waypoint', function (id) {
-    console.log(id);
     $("#waypointList").find('#' + id).remove();
+    waypointList[id] = null;
 });
 
-socket.on('remove_marker', function (waypointid) {
-    console.log("remove marker");
-    console.log(waypointid);
-    if (markers[waypointid] != null) {
-        console.log(waypointid);
-        markers[waypointid].setMap(null);
+socket.on('remove_marker', function (waypoint) {
+    if (markers[waypoint.id] != null) {
+        markers[waypoint.id].setMap(null);
     }
 });
 
@@ -126,8 +109,40 @@ $('#waypointList').on('click', '.btn-delete', function (event) {
     });
 });
 
-function addWaypoint(waypoint) {
-    $("#waypointList").append('<li class="list-group-item" id=' + waypoint.id + '>' + waypoint.name + ' <button class="btn btn-danger btn-delete">Delete</button><button class="btn btn-error btn-warning">Edit</button></li>');
+function addMarker(waypoint) {
+    if (markers[waypoint.id] == null) {
+        var marker = new google.maps.Marker({
+            position: {lat: waypoint.lat, lng: waypoint.lng},
+            map: map,
+            title: waypoint.name,
+            icon: "http://hangoverhacks.com/wp-content/uploads/2017/03/cropped-beer-32x32.png",
+            waypoint: waypoint
+        });
+        markers[waypoint.id] = marker;
+
+        marker.addListener('click', function () {
+            createWaypoint(marker.waypoint, function (data) {
+                if (data.status != null) {
+                    getWaypoint(marker.waypoint.id, function (data) {
+                        curRace.waypoints.push(data);
+                        updateRace(curRace);
+                        socket.emit('remove_marker', {roomname: curRace.name, waypoint: data})
+                    });
+                } else {
+                    curRace.waypoints.push(data.waypoint);
+                    updateRace(curRace);
+                    socket.emit('remove_marker', {roomname: curRace.name, waypoint: data.waypoint})
+                }
+            });
+
+        });
+    }
+}
+
+function addWaypoint(object) {
+    let waypoint = object.waypoint;
+    waypointList[object.id] = waypoint;
+    $("#waypointList").append('<li class="list-group-item" id=' + object.id + '>' + waypoint.name + ' <button class="btn btn-danger btn-delete">Delete</button><button class="btn btn-error btn-warning">Edit</button></li>');
 }
 
 function createWaypoint(waypoint, cb) {
@@ -159,6 +174,22 @@ function getWaypoint(id, cb) {
         }, error: function (data) {
             console.log(data);
             cb(data);
+        }
+    });
+}
+
+function getWaypointsFromRace(name, cb) {
+    $.ajax({
+        url: "/api/races/" + name,
+        type: "GET",
+        dataType: 'json',
+        contentType: "application/json",
+        success: function (data) {
+            console.log(data);
+            cb(data.waypoints);
+        }, error: function (data) {
+            console.log(data);
+            cb(data.waypoints);
         }
     });
 }
