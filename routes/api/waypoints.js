@@ -227,7 +227,7 @@ router.get('/:id', function (req, res) {
 
                     resp += "<h2>" + waypoint.waypoint.id + "</h2>";
                     resp += "<h2>" + waypoint.waypoint.name + "</h2>";
-                    if (el.lat) {
+                    if (waypoint.lat) {
                         resp += "<h3>" + data.address + "</h3>";
                         resp += "<h4 class='LAT'>" + waypoint.lat + "</h4>";
                         resp += "<h4 class='LNG'>" + waypoint.lng + "</h4>";
@@ -307,7 +307,7 @@ router.put('/:id', function (req, res) {
 
                     resp += "<h2>" + waypoint.waypoint.id + "</h2>";
                     resp += "<h2>" + waypoint.waypoint.name + "</h2>";
-                    if (el.lat) {
+                    if (waypoint.lat) {
                         resp += "<h3>" + waypoint.address + "</h3>";
                         resp += "<h4 class='LAT'>" + waypoint.lat + "</h4>";
                         resp += "<h4 class='LNG'>" + waypoint.lng + "</h4>";
