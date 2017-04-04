@@ -230,7 +230,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('remove_marker', function (data) {
-        console.log("WAYPOOINT");
         console.log(data.waypoint);
         io.sockets.in(data.roomname).emit('remove_marker', data.waypoint);
     });
