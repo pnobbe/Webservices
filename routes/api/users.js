@@ -231,7 +231,7 @@ router.put('/:email', function (req, res) {
         }
         else {
 
-            io.emit('update_user', { email: email, body: req.body });
+            io.emit('update_user', {email: email, body: req.body});
 
             res.format({
                 html: function () {
@@ -287,7 +287,7 @@ router.delete('/:email', function (req, res) {
         }
         else {
 
-            io.emit('delete_user', { email: email });
+            io.emit('delete_user', {email: email});
 
             res.format({
                 html: function () {
