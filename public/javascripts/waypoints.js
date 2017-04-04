@@ -139,9 +139,8 @@ function addMarker(waypoint) {
     }
 }
 
-function addWaypoint(object) {
-    let waypoint = object.waypoint;
-    waypointList[object.id] = waypoint;
+function addWaypoint(waypoint) {
+    waypointList[waypoint.id] = waypoint;
     $("#waypointList").append('<li class="list-group-item" id=' + object.id + '>' + waypoint.name + ' <button class="btn btn-danger btn-delete">Delete</button><button class="btn btn-error btn-warning">Edit</button></li>');
 }
 

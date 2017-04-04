@@ -1,4 +1,5 @@
 let raceList = [];
+let participantList = [];
 
 $.ajax({
     url: "/api/races/all",
@@ -30,6 +31,14 @@ socket.on('update_race_data', function (data) {
     console.log("Room " + data.name + " emitted");
     console.log(data);
 });
+
+socket.on('participant_joined'), function (data) {
+
+};
+
+socket.on('participant_left'), function (data) {
+    
+};
 
 $(".btn-new-race").click(function () {
     let name = $('#name').val();
@@ -95,6 +104,22 @@ function updateRace(race) {
         data: JSON.stringify(race),
         success: function (data) {
             console.log(data);
+        }, error: function (data) {
+            console.log(data);
+        }
+    });
+}
+
+function getParticipants(race) {
+    $.ajax({
+        url: "/api/races/" + race.name + "/participants",
+        type: "GET",
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+            data.forEach(function(participant) {
+               addParticipant(participant);
+            });
         }, error: function (data) {
             console.log(data);
         }
