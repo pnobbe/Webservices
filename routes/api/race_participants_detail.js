@@ -6,6 +6,7 @@ const Race = mongoose.model('Race');
 const User = mongoose.model('User');
 const Waypoint = mongoose.model('Waypoint');
 
+
 function parse(req, res, callback) {
     var name;
     if (req.params.name) {
@@ -40,7 +41,7 @@ function parse(req, res, callback) {
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/:
  *   post:
  *     tags:
  *       - Races
@@ -56,7 +57,7 @@ router.post('/', function (req, res, next) {
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/:name/participants:
  *   get:
  *     tags:
  *       - Races
@@ -79,39 +80,13 @@ router.post('/', function (req, res, next) {
 router.get('/', function (req, res) {
 
     parse(req, res, data => {
-
-        // filter waypoints object
-        var id;
-        if (req.params.id) {
-            id = req.params.id;
-        } else {
-            res.status(400).send({error: "An error occurred"});
-            return;
-        }
-
-        data = data.waypoints.filter(data => {
-            if (!data.waypoint) {
-                return false;
-            }
-            return data.waypoint.id == id;
-        });
-
-        if (data.length == 0) {
-            res.format({
-                json: function () {
-                    res.status(400).send({error: "No waypoint found with that id."});
-                },
-                html: function () {
-                    res.status(400).send('<strong>No waypoint found with that id.</strong>');
-                }
-            });
-        }
         res.format({
             json: function () {
-                res.status(200).send(data);
+                console.log(Race.printJSON(data).participants);
+                res.status(200).send(Race.printJSON(data).participants);
             },
             html: function () {
-                res.status(200).send(Race.printHTMLWaypoints(data));
+                res.status(200).send(Race.printHTMLParticipants(data));
             }
         });
     });
@@ -122,11 +97,11 @@ router.get('/', function (req, res) {
 
 /**
  * @swagger
- * /races/:name/waypoints:
+ * /races/:name/participants:
  *   put:
  *     tags:
  *      - Races
- *     description: Updates waypoint
+ *     description: Updates patricipants
  *     produces: application/json
  *     parameters:
  *       name: race
@@ -140,12 +115,40 @@ router.get('/', function (req, res) {
  *         description: Updated race
  */
 router.put('/', function (req, res) {
+    const io = req.app.get('io');
 
+    var name;
+    if (req.params.name) {
+        name = req.params.name;
+    } else {
+        res.status(400).send({error: "An error occurred"});
+        return;
+    }
+    // Call Race.update
+    Race.updateRace(name, {participants: req.body.participants}, function (message, success) {
+
+        if (!success) {
+            res.status(400).send({error: message});
+        }
+        else {
+
+            io.emit('update_race', {name: name, body: req.body});
+
+            res.format({
+                html: function () {
+                    res.status(200).send(Race.printHTMLParticipants(success));
+                },
+                json: function () {
+                    res.status(200).send(Race.printJSON(success).participants);
+                }
+            })
+        }
+    });
 });
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/:name/participants:
  *   delete:
  *     tags:
  *       - Races
@@ -163,51 +166,38 @@ router.put('/', function (req, res) {
  *         description: Successfully deleted
  */
 router.delete('/', function (req, res) {
-    const io = req.app.get('io');
 
-    parse(req, res, data => {
+    var name;
+    if (req.params.name) {
+        name = req.params.name;
+    } else {
+        res.status(400).send({error: "An error occurred"});
+        return;
+    }
+    // Call Race.update
+    Race.updateRace(name, {participants: []}, function (message, success) {
 
-        // filter waypoints object
-        var id;
-        if (req.params.id) {
-            id = req.params.id;
-        } else {
-            res.status(400).send({error: "An error occurred"});
-            return;
+        if (!success) {
+            res.status(400).send({error: message});
         }
+        else {
 
-        var newWaypoints = data.waypoints.filter(data => {
-            if (!data.waypoint) {
-                return true;
-            }
-            return data.waypoint.id != id;
-        });
+            io.emit('update_race', {name: name, body: req.body});
 
-        // PUT
-        Race.updateRace(data.name, {waypoints: newWaypoints}, function (message, success) {
+            res.format({
+                html: function () {
+                    res.status(200).send('<p>participants have been removed successfully.</p>');
+                },
 
-                if (!success) {
-                    res.status(400).send({error: message});
+                json: function () {
+                    res.status(200).send({
+                        message: "participants have been removed successfully",
+                        race: Race.printJSON(race)
+                    });
                 }
-                else {
-
-                    io.to(data.name).emit('update_race_data', success);
-                    io.emit('update_race', success);
-
-                    res.format({
-                        html: function () {
-                            res.status(200).send({message: "Delete succesfull"});
-                        },
-                        json: function () {
-                            res.status(200).send("<p>Delete successfull</p>");
-                        }
-                    })
-                }
-            }
-        );
-
+            })
+        }
     });
-
 });
 
 

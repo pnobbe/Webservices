@@ -102,31 +102,31 @@ raceSchema.statics.updateRace = function (name, body, done) {
 
             // participants
             race.participants = body.participants ? body.participants.map(function (entree) {
-                    if (entree instanceof mongoose.Types.ObjectId) {
-                        return entree;
-                    }
-                    return mongoose.Types.ObjectId(entree);
+                if (entree instanceof mongoose.Types.ObjectId) {
+                    return entree;
+                }
+                return mongoose.Types.ObjectId(entree);
 
-                }) : race.participants;
+            }) : race.participants;
 
 
             // waypoints
-        console.log(body);
+            console.log(body);
             race.waypoints = body.waypoints ? (body.waypoints.map(function (entree) {
 
-                    console.log(entree);
-                    if (entree.passed_participants != null) {
-                        return entree;
-                    }
-                    if (entree instanceof mongoose.Types.ObjectId) {
-                        return {waypoint: entree, passed_participants: []}
-                    }
-                    else if (entree._id) {
-                        return {waypoint: ((mongoose.model('Race', raceSchema))(entree)), passed_participants: []}
-                    }
-                    return {waypoint: mongoose.Types.ObjectId(entree), passed_participants: []}
+                console.log(entree);
+                if (entree.passed_participants != null) {
+                    return entree;
+                }
+                if (entree instanceof mongoose.Types.ObjectId) {
+                    return {waypoint: entree, passed_participants: []}
+                }
+                else if (entree._id) {
+                    return {waypoint: ((mongoose.model('Race', raceSchema))(entree)), passed_participants: []}
+                }
+                return {waypoint: mongoose.Types.ObjectId(entree), passed_participants: []}
 
-                })) : race.waypoints;
+            })) : race.waypoints;
 
 
             race.startTime = body.startTime ? body.startTime : race.startTime;
@@ -189,9 +189,12 @@ raceSchema.statics.printJSON = function (race) {
     }
     obj.waypoints = race.waypoints;
 
-    if (race.waypoints != null && race.waypoints.length > 0 && race.waypoints[0].waypoint && race.waypoints[0].waypoint instanceof Waypoint) {
+    if (race.waypoints != null && race.waypoints.length > 0) {
         obj.waypoints = race.waypoints.map(data => {
 
+            if (!data.waypoint || !(data.waypoint instanceof Waypoint)) {
+                return {};
+            }
             var waypoint = Waypoint.printJSON(data.waypoint);
 
             return {
@@ -243,7 +246,7 @@ raceSchema.statics.printHTML = function (data, participants, waypoints) {
 raceSchema.statics.printHTMLParticipants = function (data) {
     var resp = "<div>";
     // participants
-    if (data.participants != null && data.participants.length > 0 && data.participants[0] instanceof User) {
+    if (data.participants != null && data.participants.length > 0) {
         resp += "<div>";
         data.participants.forEach(el => {
             resp = User.printJSON(el)
@@ -259,12 +262,17 @@ raceSchema.statics.printHTMLWaypoints = function (data) {
 
     var resp = "<div>";
 
+    console.log(data);
     // waypoints
-    if (data != null && data.length > 0 && data[0].waypoint && data[0].waypoint instanceof Waypoint) {
+    if (data != null && data.length > 0) {
         data.forEach(data => {
+
+            if (!data.waypoint) {
+                return;
+            }
+
             resp += "<div>";
             resp += Waypoint.printHTML(data.waypoint);
-
 
             data.passed_participants.forEach(data => {
 
@@ -309,8 +317,8 @@ raceSchema.statics.createNew = function (body, done) {
             newRace.owner = body.owner;
             newRace.participants = body.participants ? body.participants : [];
             newRace.waypoints = body.waypoints ? body.waypoints.map(function (entree) {
-                    return {waypoint: entree, passed_participants: []}
-                }) : [];
+                return {waypoint: entree, passed_participants: []}
+            }) : [];
 
 
             newRace.save(function (err, race) {
