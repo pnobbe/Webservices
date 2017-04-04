@@ -57,10 +57,7 @@ router.get('/', function (req, res, next) {
                 html: function () {
                     let resp = "<div>";
                     data.forEach(function (data) {
-                        resp += "<div>";
-                        resp += "<h2>" + data.name + "</h2>";
-                        resp += "<h4>" + data.email + "</h4>";
-                        resp += "</div>";
+                        resp += User.printHTML(data);
                     });
                     resp += "</div>";
                     res.status(200).send(resp);
@@ -175,13 +172,7 @@ router.get('/:email', function (req, res) {
             },
             html: function () {
                 if (user) {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + user.name + "</h2>";
-                    resp += "<h4>" + user.email + "</h4>";
-                    resp += "</div>";
-
-                    res.status(200).send(resp);
+                    res.status(200).send(User.printHTML(user));
                 } else {
                     res.status(400).send('<strong>No user found with that email. </strong>');
                 }
@@ -233,12 +224,7 @@ router.put('/:email', function (req, res) {
 
             res.format({
                 html: function () {
-                    var resp = "";
-                    resp += "<div>";
-                    resp += "<h2>" + success.name + "</h2>";
-                    resp += "<h4>" + success.email + "</h4>";
-                    resp += "</div>";
-                    res.status(200).send(resp);
+                    res.status(200).send(User.printHTML(success));
                 },
                 json: function () {
                     res.status(200).send(User.printJSON(success));

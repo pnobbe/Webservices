@@ -37,7 +37,6 @@ module.exports = class Places {
                 return waypoint;
             });
             return self.waypointsToCoordinates(promises);
-            s
         });
     }
 

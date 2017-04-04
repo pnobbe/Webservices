@@ -213,6 +213,13 @@ userSchema.statics.printJSON = function (user) {
     }
 };
 
+
+userSchema.statics.printHTML = function (user) {
+
+    return "<div> <p>" + user.email + " </p> <p>" + user.name + " </p></div>";
+
+};
+
 userSchema.virtual('isAdmin').get(function () {
     return this.role.includes("admin");
 });

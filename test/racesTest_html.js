@@ -120,15 +120,7 @@ describe('Race', function () {
                         .send(race)
                         .end((err, res) => {
                             res.should.have.status(200);
-                            parser(res.text, function (err, result) {
-                                result.should.have.property('p').eql('Race has been created successfully.');
-                                done();
-                            });
-
-                            res.body.should.be.a('object');
-                            res.body.should.have.property('name').eql(race.name);
-                            res.body.should.have.property('city').eql(race.city);
-                            chai.assert(res.body.owner._id.toString() == savedUser._id.toString());
+                            chai.assert(res.text == racemodel.printHTML(race));
                             done();
                         });
                 });
@@ -167,10 +159,6 @@ describe('Race', function () {
                         .send(race)
                         .end((err, res) => {
                             res.should.have.status(200);
-                            res.body.should.be.a('object');
-                            res.body.should.have.property('name').eql(race.name);
-                            res.body.should.have.property('city').eql(race.city);
-                            chai.assert(res.body.owner.toString() == savedUser._id.toString());
                             done();
                         });
                 });
