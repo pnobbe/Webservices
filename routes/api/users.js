@@ -10,12 +10,31 @@ const Regex = require('../../service/regex');
  * definitions:
  *   User:
  *     properties:
- *       email:
+ *      _id:
+ *          type: string
+ *      email:
  *         type: string
- *       name:
+ *      name:
  *         type: string
- *       password:
+ *      isAdmin:
+ *          type: boolean
+ *     required:
+ *      - email
+ *      - name
+ *
+ */
+
+/**
+ * @swagger
+ * definitions:
+ *   UserCreate:
+ *     properties:
+ *      email:
  *         type: string
+ *      name:
+ *         type: string
+ *      password:
+ *          type: string
  *     required:
  *      - email
  *      - name
@@ -25,19 +44,44 @@ const Regex = require('../../service/regex');
 
 /**
  * @swagger
- * /users/:
+ * /users/all/{page}/{limit}:
  *   get:
  *     tags:
  *       - Users
- *     description: Returns all users
+ *     description: Returns all users. (Authorization required)
  *     accepts:
  *       - application/json
  *       - text/html
+ *     parameters:
+ *       - name: page
+ *         description: pagination return page
+ *         in: path
+ *         required: false
+ *         type: number
+ *       - name: limit
+ *         description: pagination page size
+ *         in: path
+ *         required: false
+ *         type: number
  *     responses:
  *       200:
  *         description: An array of users
  *         schema:
- *           $ref: '#/definitions/User'
+ *         type: object
+ *         properties:
+ *           result:
+ *             type: array
+ *             items:
+ *               $ref: '#/definitions/User'
+ *             required: true
+ *           page:
+ *             type: number
+ *             required: true
+ *           limit:
+ *             type: number
+ *             required: true
+ *           notice:
+ *             type: string
  */
 router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');
@@ -108,29 +152,31 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
 
 })
 ;
-
 /**
  * @swagger
  * /users/:
  *   post:
  *     tags:
  *       - Users
- *     description: Creates a new user
+ *     description: Creates a new local user
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: user
- *         description: User object
+ *       - name: Local User
+ *         description: User Creation object
  *         in: body
  *         required: true
  *         schema:
- *           $ref: '#/definitions/User'
+ *           $ref: '#/definitions/UserCreate'
  *     responses:
  *       200:
  *         description: Successfully created
  *       400:
  *         description: An error occurred.
  */
+
+
+
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
 

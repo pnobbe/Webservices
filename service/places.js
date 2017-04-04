@@ -36,7 +36,7 @@ module.exports = class Places {
                 waypoint.id = entree.place_id;
                 return waypoint;
             });
-            return self.createWaypoints(promises);
+            return self.createWaypoints(promises.slice(0, 20));
         });
     }
 
@@ -68,7 +68,7 @@ module.exports = class Places {
                 waypoint.id = entree.place_id;
                 return waypoint;
             });
-            return self.createWaypoints(promises);
+            return self.createWaypoints(promises.slice(0, 20));
         });
 
     }
