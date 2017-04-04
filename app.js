@@ -193,11 +193,6 @@ const server = app.listen(config.socketPort, () => {
 
 const io = require('socket.io')(server);
 
-if (config.url != "http://127.0.0.1:3000") {
-    io.set('transports', ['xhr-polling']);
-    io.set('polling duration', 10);
-}
-
 app.set('io', io);
 
 app.use(bodyParser.urlencoded({extended: false}));
