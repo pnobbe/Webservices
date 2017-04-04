@@ -27,7 +27,7 @@ describe('Places', function () {
                 chai.assert(data[0].waypoint instanceof waypointmodel);
                 done();
             });
-        })
+        }).timeout(5000);
     });
     describe('getNearbyLocationsbyCity', () => {
         it("should return den bosch locations", (done) => {
@@ -37,7 +37,7 @@ describe('Places', function () {
                 chai.assert(data[0].waypoint instanceof waypointmodel);
                 done();
             });
-        })
+        }).timeout(5000);
     });
 });
 

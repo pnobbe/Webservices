@@ -50,14 +50,14 @@ describe('Race', function () {
         describe('/GET race', () => {
             it('it should GET all the races', (done) => {
                 chai.request(app)
-                    .get('/api/races')
+                    .get('/api/races/all')
                     .set('content-type', 'application/json')
                     .set('accept', 'text/html')
                     .end((err, res) => {
                         res.should.have.status(200);
                         parser(res.text, function (err, result) {
-                            result.should.have.property('div');
-                            result.div.should.not.have.property('div');
+                            result.should.have.property('h1');
+                            result.h1.should.not.have.property('div');
                             done();
                         });
                     });
@@ -204,14 +204,14 @@ describe('Race', function () {
                                 result.should.have.property('p').eql("Deleted succesfully");
 
                                 chai.request(app)
-                                    .get('/api/races')
+                                    .get('/api/races/all')
                                     .set('content-type', 'application/json')
                                     .set('accept', 'text/html')
                                     .end((err, res) => {
                                         res.should.have.status(200);
                                         parser(res.text, function (err, result) {
-                                            result.should.have.property('div');
-                                            result.div.should.not.have.property('div');
+                                            result.should.have.property('h1');
+                                            result.h1.should.not.have.property('div');
                                             done();
                                         });
                                     });
@@ -239,14 +239,14 @@ describe('Race', function () {
                                         result.should.have.property('p').eql("Deleted succesfully");
 
                                         chai.request(app)
-                                            .get('/api/races')
+                                            .get('/api/races/all')
                                             .set('content-type', 'application/json')
                                             .set('accept', 'text/html')
                                             .end((err, res) => {
                                                 res.should.have.status(200);
                                                 parser(res.text, function (err, result) {
-                                                    result.should.have.property('div');
-                                                    result.div.should.have.property('div');
+                                                    result.should.have.property('h1');
+                                                    result.h1.should.not.have.property('div');
                                                     done();
                                                 });
                                             });

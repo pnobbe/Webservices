@@ -33,14 +33,14 @@ describe('Waypoints', function () {
         describe('/GET waypoint', () => {
             it('it should GET all the waypoints', (done) => {
                 chai.request(app)
-                    .get('/api/waypoints')
+                    .get('/api/waypoints/all')
                     .set('content-type', 'application/json')
                     .set('accept', 'text/html')
                     .end((err, res) => {
                         res.should.have.status(200);
                         parser(res.text, function (err, result) {
-                            result.should.have.property('div');
-                            result.div.should.not.have.property('div');
+                            result.should.have.property('h1');
+                            result.h1.should.not.have.property('div');
                             done();
                         });
                     });
@@ -90,7 +90,7 @@ describe('Waypoints', function () {
                 });
                 waypoint.save((err, user) => {
                     chai.request(app)
-                        .get('/api/waypoints/' + waypoint.id)
+                        .get('/api/waypoints/all' + waypoint.id)
                         .set('accept', 'text/html')
                         .send(waypoint)
                         .end((err, res) => {
@@ -169,14 +169,14 @@ describe('Waypoints', function () {
                                 result.should.have.property('p').eql("Deleted succesfully");
 
                                 chai.request(app)
-                                    .get('/api/waypoints')
+                                    .get('/api/waypoints/all')
                                     .set('content-type', 'application/json')
                                     .set('accept', 'text/html')
                                     .end((err, res) => {
                                         res.should.have.status(200);
                                         parser(res.text, function (err, result) {
-                                            result.should.have.property('div');
-                                            result.div.should.not.have.property('div');
+                                            result.should.have.property('h1');
+                                            result.h1.should.not.have.property('div');
                                             done();
                                         });
                                     });
@@ -205,13 +205,13 @@ describe('Waypoints', function () {
 
 
                                     chai.request(app)
-                                        .get('/api/waypoints')
+                                        .get('/api/waypoints/all')
                                         .set('content-type', 'application/json')
                                         .set('accept', 'application/json')
                                         .end((err, res) => {
                                             res.should.have.status(200);
-                                            res.body.should.be.a('array');
-                                            res.body.length.should.be.eql(1);
+                                            res.body.result.should.be.a('array');
+                                            res.body.result.length.should.be.eql(1);
                                             done();
                                         });
 

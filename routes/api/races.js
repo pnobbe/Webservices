@@ -115,7 +115,7 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *     responses:
  *       200:
  *         description: Successfully created
- *       500:
+ *       400:
  *         description: An error occurred.
  */
 router.post('/', function (req, res, next) {
@@ -143,7 +143,7 @@ router.post('/', function (req, res, next) {
                 },
 
                 json: function () {
-                    res.status(200).send({message: "Race has been created successfully.", race: race});
+                    res.status(200).send({message: "Race has been created successfully.", race: Race.printJSON(race)});
                 }
             })
         }
@@ -301,7 +301,7 @@ router.delete('/:name', function (req, res) {
     Race.deleteRace(name, function (errors) {
 
         if (errors) {
-            res.status(500).send("Error deleting " + name);
+            res.status(400).send("Error deleting " + name);
         }
         else {
 

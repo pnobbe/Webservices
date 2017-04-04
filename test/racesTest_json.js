@@ -49,13 +49,13 @@ describe('Race', function () {
         describe('/GET race', () => {
             it('it should GET all the races', (done) => {
                 chai.request(app)
-                    .get('/api/races')
+                    .get('/api/races/all')
                     .set('content-type', 'application/json')
                     .set('accept', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.be.a('array');
-                        res.body.length.should.be.eql(0);
+                        res.body.result.should.be.a('array');
+                        res.body.result.length.should.be.eql(0);
                         done();
                     });
             });
@@ -206,13 +206,13 @@ describe('Race', function () {
                             res.body.should.be.a('object');
                             res.body.should.have.property('message').eql("Deleted succesfully");
                             chai.request(app)
-                                .get('/api/races')
+                                .get('/api/races/all')
                                 .set('content-type', 'application/json')
                                 .set('accept', 'application/json')
                                 .end((err, res) => {
                                     res.should.have.status(200);
-                                    res.body.should.be.a('array');
-                                    res.body.length.should.be.eql(0);
+                                    res.body.result.should.be.a('array');
+                                    res.body.result.length.should.be.eql(0);
                                     done();
                                 });
                         });
@@ -236,13 +236,13 @@ describe('Race', function () {
                                     res.body.should.have.property('message').eql("Deleted succesfully");
 
                                     chai.request(app)
-                                        .get('/api/races')
+                                        .get('/api/races/all')
                                         .set('content-type', 'application/json')
                                         .set('accept', 'application/json')
                                         .end((err, res) => {
                                             res.should.have.status(200);
-                                            res.body.should.be.a('array');
-                                            res.body.length.should.be.eql(1);
+                                            res.body.result.should.be.a('array');
+                                            res.body.result.length.should.be.eql(1);
                                             done();
                                         });
 

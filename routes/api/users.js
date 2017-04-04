@@ -128,7 +128,7 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *     responses:
  *       200:
  *         description: Successfully created
- *       500:
+ *       400:
  *         description: An error occurred.
  */
 router.post('/', function (req, res, next) {
@@ -149,11 +149,11 @@ router.post('/', function (req, res, next) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> User has been created successfully. </p>');
+                    res.status(200).send('<p>User has been created successfully.</p>');
                 },
 
                 json: function () {
-                    res.status(200).send({message: "User has been created successfully.", user: user});
+                    res.status(200).send({message: "User has been created successfully.", user: User.printJSON(user)});
                 }
             })
         }
@@ -308,7 +308,7 @@ router.delete('/:email', function (req, res) {
     User.deleteUser(email, function (errors) {
 
         if (errors) {
-            res.status(500).send("Error deleting " + email);
+            res.status(400).send("Error deleting " + email);
         }
         else {
 
