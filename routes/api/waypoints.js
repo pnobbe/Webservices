@@ -3,7 +3,7 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const Waypoint = mongoose.model('Waypoint');
-
+const Regex = require('../../service/regex');
 
 /**
  * @swagger
@@ -39,10 +39,34 @@ const Waypoint = mongoose.model('Waypoint');
  *         schema:
  *           $ref: '#/definitions/Waypoint'
  */
-router.get('/', function (req, res, next) {
-    console.log(req.user);
+router.get('/all/:page?/:limit?', function (req, res, next) {
+    var page = 1;
+    var limit = 10;
+    var error;
+    if (req.params.page) {
+        page = Math.max(req.params.page, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    if (req.params.limit) {
+        limit = Math.max(req.params.limit, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    var offset = (page - 1) * limit;
 
-    Waypoint.findAll(function (errors, data) {
+    // queries
+    var allowed = ["id", "name"];
+    var queries = {};
+    for (var k in req.query) {
+        if (req.query.hasOwnProperty(k) && allowed.includes(k)) {
+            queries[k.toString()] = {$regex: Regex.parse(req.query[k]), $options: "i"}
+        }
+    }
+
+    Waypoint.findAll(queries, offset, limit, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -50,10 +74,22 @@ router.get('/', function (req, res, next) {
         else {
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(Waypoint.printJSON));
+                    var val = {
+                        page: page,
+                        limit: limit,
+                        notice: error,
+                        result: data.map(Waypoint.printJSON)
+                    };
+                    res.status(200).send(val);
                 },
                 html: function () {
                     let resp = "<div>";
+                    if (error) {
+                        resp = "<h3>Notice " + error + "</h3>";
+                    }
+                    resp = "<h3>PAGE " + page + "</h3>";
+                    resp = "<h3>LIMIT " + limit + "</h3>";
+                    resp = "<h1>DATA </h1>";
                     data.forEach(function (data) {
                         resp += Waypoint.printHTML(data);
                     });
@@ -62,7 +98,7 @@ router.get('/', function (req, res, next) {
                 }
             });
         }
-    });
+    })
 });
 
 /**

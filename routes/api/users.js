@@ -3,7 +3,7 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-
+const Regex = require('../../service/regex');
 
 /**
  * @swagger
@@ -39,11 +39,39 @@ const User = mongoose.model('User');
  *         schema:
  *           $ref: '#/definitions/User'
  */
-router.get('/', function (req, res, next) {
+router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');
-    console.log("new waypoint");
 
-    User.find({}, function (errors, data) {
+    // Pagination
+    var page = 1;
+    var limit = 10;
+    var error;
+    if (req.params.page) {
+        page = Math.max(req.params.page, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    if (req.params.limit) {
+        limit = Math.max(req.params.limit, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    var offset = (page - 1) * limit;
+
+    // queries
+    var allowed = ["email", "name"];
+    var queries = {};
+    for (var k in req.query) {
+        if (req.query.hasOwnProperty(k) && allowed.includes(k)) {
+            queries[k.toString()] = {$regex: Regex.parse(req.query[k]), $options: "i"}
+        }
+    }
+
+
+    // execute
+    User.find(queries, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -52,10 +80,22 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(User.printJSON));
+                    var val = {
+                        page: page,
+                        limit: limit,
+                        notice: error,
+                        result: data.map(User.printJSON)
+                    };
+                    res.status(200).send(val);
                 },
                 html: function () {
                     let resp = "<div>";
+                    if (error) {
+                        resp = "<h3>Notice " + error + "</h3>";
+                    }
+                    resp = "<h3>PAGE " + page + "</h3>";
+                    resp = "<h3>LIMIT " + limit + "</h3>";
+                    resp = "<h1>DATA </h1>";
                     data.forEach(function (data) {
                         resp += User.printHTML(data);
                     });
@@ -64,9 +104,10 @@ router.get('/', function (req, res, next) {
                 }
             });
         }
-    });
+    }).skip(offset).limit(limit);
 
-});
+})
+;
 
 /**
  * @swagger
@@ -108,7 +149,7 @@ router.post('/', function (req, res, next) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p>User has been created successfully.</p>');
+                    res.status(200).send('<p> User has been created successfully. </p>');
                 },
 
                 json: function () {

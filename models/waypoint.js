@@ -29,9 +29,9 @@ waypointSchema.statics.findById = function (id, cb) {
     });
 };
 
-waypointSchema.statics.findAll = function (callback) {
+waypointSchema.statics.findAll = function (queries, offset, limit, callback) {
 
-    return this.find({}).exec(function (errors, data) {
+    return this.find(queries).skip(offset).limit(limit).exec(function (errors, data) {
 
         if (errors) {
             cb(errors, data);

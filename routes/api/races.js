@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const Regex = require('../../service/regex');
 const mongoose = require('mongoose');
 const Race = mongoose.model('Race');
 const User = mongoose.model('User');
@@ -17,7 +17,7 @@ const Waypoint = mongoose.model('Waypoint');
 
 /**
  * @swagger
- * /races/:
+ * /races/all:
  *   get:
  *     tags:
  *       - Races
@@ -31,10 +31,37 @@ const Waypoint = mongoose.model('Waypoint');
  *         schema:
  *           $ref: '#/definitions/Race'
  */
-router.get('/', function (req, res, next) {
+router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');
 
-    Race.find({}, function (errors, data) {
+    var page = 1;
+    var limit = 10;
+    var error;
+    if (req.params.page) {
+        page = Math.max(req.params.page, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    if (req.params.limit) {
+        limit = Math.max(req.params.limit, 1);
+    }
+    else {
+        error = "Usage: /all/:page/:limit?params";
+    }
+    var offset = (page - 1) * limit;
+
+
+    // queries
+    var allowed = ["city", "name", "owner"];
+    var queries = {};
+    for (var k in req.query) {
+        if (req.query.hasOwnProperty(k) && allowed.includes(k)) {
+            queries[k.toString()] = {$regex: Regex.parse(req.query[k]), $options: "i"}
+        }
+    }
+
+    Race.find(queries, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -43,10 +70,22 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(Race.printJSON));
+                    var val = {
+                        page: page,
+                        limit: limit,
+                        notice: error,
+                        result: data.map(Race.printJSON)
+                    };
+                    res.status(200).send(val);
                 },
                 html: function () {
                     let resp = "<div>";
+                    if (error) {
+                        resp = "<h3>Notice " + error + "</h3>";
+                    }
+                    resp = "<h3>PAGE " + page + "</h3>";
+                    resp = "<h3>LIMIT " + limit + "</h3>";
+                    resp = "<h1>DATA </h1>";
                     data.forEach(function (data) {
                         resp += Race.printHTML(data);
                     });
@@ -55,7 +94,8 @@ router.get('/', function (req, res, next) {
                 }
             });
         }
-    });
+    }).skip(offset).limit(limit);
+    ;
 
 });
 
