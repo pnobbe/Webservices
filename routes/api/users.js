@@ -41,7 +41,6 @@ const User = mongoose.model('User');
  */
 router.get('/', function (req, res, next) {
     const io = req.app.get('io');
-    console.log("new waypoint");
 
     User.find({}, function (errors, data) {
 

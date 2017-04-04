@@ -127,13 +127,11 @@ router.post('/', function (req, res, next) {
                     html: function () {
                         res.status(200).send('<p> Waypoint has been created successfully. </p>');
                     },
-
                     json: function () {
 
                         var obj = {
                             id: waypoint.waypoint.id,
                             name: waypoint.waypoint.name
-
                         };
 
                         if (waypoint.lat) {
@@ -141,7 +139,6 @@ router.post('/', function (req, res, next) {
                             obj.lat = waypoint.lat;
                             obj.lng = waypoint.lng;
                         }
-
 
                         res.status(200).send({message: "Waypoint has been created successfully.", waypoint: obj});
                     }

@@ -47,7 +47,6 @@ userSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password, this.local.password);
 };
 
-
 userSchema.statics.deleteUser = function (email, done) {
     if (!email) {
         return done("Missing input data.", false);

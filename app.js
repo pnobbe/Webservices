@@ -240,6 +240,18 @@ io.on('connection', (socket) => {
 
     console.log(socket.request.user);
 
+    socket.on('join_room', function (name) {
+        socket.join(name);
+    });
+
+    socket.on('leave_room', function (name) {
+        socket.leave(name);
+    });
+
+    socket.on('remove_marker', function (data) {
+        console.log(data.waypointid);
+       io.sockets.in(data.roomname).emit('remove_marker', data.waypointid);
+    });
 
     socket.on('new_waypoint', function () {
         waypointCount++;
