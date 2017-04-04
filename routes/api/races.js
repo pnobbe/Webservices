@@ -67,7 +67,6 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
             res.status(400).send({error: "An error occurred"});
         }
         else {
-
             res.format({
                 json: function () {
                     var val = {
@@ -94,9 +93,7 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
                 }
             });
         }
-    }).skip(offset).limit(limit);
-    ;
-
+    }).skip(offset).limit(limit).populate("owner");
 });
 
 /**
@@ -123,9 +120,8 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
-    console.log(req.body);
-    if (req.body.user == null) {
-        req.body.user = req.user;
+    if (req.body.owner == null) {
+        req.body.owner = req.user;
     }
 
     // Call Race.create
@@ -139,7 +135,7 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('new_race', req.body.name);
+            io.emit('new_race', race);
 
             res.format({
                 html: function () {
@@ -196,6 +192,9 @@ router.get('/:name', function (req, res) {
         }
 
         let race = data;
+        if (race) {
+            io.to(race.name).emit('update_race_data', race);
+        }
         res.format({
             json: function () {
                 if (race) {
@@ -305,6 +304,8 @@ router.delete('/:name', function (req, res) {
             res.status(500).send("Error deleting " + name);
         }
         else {
+
+            io.emit('delete_race', name);
             res.format({
                 html: function () {
                     res.status(200).send('<p>Deleted succesfully</p>');
