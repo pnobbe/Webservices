@@ -41,6 +41,7 @@ const User = mongoose.model('User');
  */
 router.get('/', function (req, res, next) {
     const io = req.app.get('io');
+    console.log("new waypoint");
 
     User.find({}, function (errors, data) {
 
@@ -171,7 +172,7 @@ router.get('/:email', function (req, res) {
                 } else {
                     res.status(400).send({error: "No user found with that email."});
                 }
-            }.bind(res),
+            },
             html: function () {
                 if (user) {
                     var resp = "";
@@ -281,6 +282,9 @@ router.delete('/:email', function (req, res) {
             res.status(500).send("Error deleting " + email);
         }
         else {
+
+            io.emit('delete_user', { email: email });
+
             res.format({
                 html: function () {
                     res.status(200).send('<p> Deleted succesfully </p>');

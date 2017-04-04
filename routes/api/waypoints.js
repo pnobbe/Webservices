@@ -40,6 +40,7 @@ const Waypoint = mongoose.model('Waypoint');
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     Waypoint.findAll(function (errors, data) {
 
@@ -108,6 +109,7 @@ router.get('/', function (req, res, next) {
  *         description: An error occurred.
  */
 router.post('/', function (req, res, next) {
+    const io = req.app.get('io');
 
     // Call User.create
     Waypoint.createNew(req.body, function (errors, waypoint, info) {
@@ -119,6 +121,9 @@ router.post('/', function (req, res, next) {
             res.status(400).send({error: info});
         }
         else {
+
+            io.emit('delete_user', { email: email });
+
             res.format({
                     html: function () {
                         res.status(200).send('<p> Waypoint has been created successfully. </p>');
@@ -174,6 +179,8 @@ router.post('/', function (req, res, next) {
  *           $ref: '#/definitions/Waypoint'
  */
 router.get('/:id', function (req, res) {
+    const io = req.app.get('io');
+
     var id;
     if (req.params.id) {
         id = req.params.id;
@@ -256,6 +263,8 @@ router.get('/:id', function (req, res) {
  *         description: Updated waypoint
  */
 router.put('/:id', function (req, res) {
+    const io = req.app.get('io');
+
     var id;
     if (req.params.id) {
         id = req.params.id;
@@ -269,6 +278,9 @@ router.put('/:id', function (req, res) {
             res.status(400).send({error: message});
         }
         else {
+
+            io.emit('update_waypoint', { id: id, body: req.body });
+
             res.format({
                 json: function () {
                     var obj = {
@@ -326,6 +338,8 @@ router.put('/:id', function (req, res) {
  *         description: Successfully deleted
  */
 router.delete('/:id', function (req, res) {
+    const io = req.app.get('io');
+
     var id;
     if (req.params.id) {
         id = req.params.id;
@@ -339,6 +353,9 @@ router.delete('/:id', function (req, res) {
             res.status(400).send({error: "Error deleting " + id});
         }
         else {
+
+            io.emit('delete_waypoint', { id: id });
+
             res.format({
                 html: function () {
                     res.status(200).send('<p> Deleted succesfully </p>');
