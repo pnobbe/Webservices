@@ -1,5 +1,5 @@
-const socket = io.connect('http://127.0.0.1:3001', {secure: true});
-//const socket = io.connect("https://restrace.herokuapp.com",{secure: true});
+//const socket = io.connect('http://127.0.0.1:3001', {secure: true});
+const socket = io.connect("https://restrace.herokuapp.com",{secure: true});
 
 socket.on('connect', function () {
     console.log("Successfully connected to socket on port ");
