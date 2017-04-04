@@ -99,13 +99,23 @@ raceSchema.statics.updateRace = function (name, body, done) {
             race.name = body.name ? body.name : race.name;
             race.city = body.city ? body.city : race.city;
             race.owner = body.owner ? body.owner : race.owner;
-            race.participants = body.participants ? body.participants : [];
+            race.participants = body.participants ? body.participants.map(function (entree) {
+                if (entree instanceof mongoose.Types.ObjectId) {
+                    return entree;
+                }
+                return mongoose.Types.ObjectId(entree);
+
+            }) : race.participants;
             race.waypoints = body.waypoints ? body.waypoints.map(function (entree) {
                 if (entree.passed_participants != null) {
-                    return entree.waypoint;
+                    return entree;
                 }
-                return {waypoint: entree, passed_participants: []}
-            }) : [];
+                if (entree instanceof mongoose.Types.ObjectId) {
+                    return {waypoint: entree, passed_participants: []}
+                }
+                return {waypoint: mongoose.Types.ObjectId(entree), passed_participants: []}
+
+            }) : race.waypoints;
 
             race.startTime = body.startTime ? body.startTime : race.startTime;
             race.stopTime = body.stopTime ? body.stopTime : race.stopTime;

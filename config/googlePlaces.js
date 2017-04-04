@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-    'places_key': 'AIzaSyBCWoTvus1q2rKjAtHEi4mpPv0LApIEtwE',
+    'places_key': 'AIzaSyDYIhC3kKzrqUpjO1rGyEV_WM0RMnydgaY',
     'range': 1000,
     'geo_options': {
         provider: 'google',
