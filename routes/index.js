@@ -53,7 +53,7 @@ module.exports = function (app, passport, user) {
     /**
      * API
      */
-    app.use('/api', require('./api')());
+    app.use('/api', require('./api')(user));
 
     /**
      * AUTHENTICATE (FIRST LOGIN)

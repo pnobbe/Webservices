@@ -79,6 +79,9 @@ userSchema.statics.updateUser = function (email, body, done) {
         if (body.email) {
             user.email = body.email;
         }
+        if (body.role) {
+            user.role = body.role;
+        }
 
         user.save(function (err, updatedUser) {
             if (err)
@@ -209,7 +212,8 @@ userSchema.statics.printJSON = function (user) {
     return {
         _id: user._id,
         email: user.email,
-        name: user.name
+        name: user.name,
+        isAdmin: user.isAdmin
     }
 };
 

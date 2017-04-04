@@ -145,7 +145,7 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('new_user', req.body.email);
+            io.emit('new_user', user);
 
             res.format({
                 html: function () {
@@ -260,8 +260,7 @@ router.put('/:email', function (req, res) {
             res.status(400).send({error: message});
         }
         else {
-
-            io.emit('update_user', {email: email, body: req.body});
+            io.emit('update_user', success);
 
             res.format({
                 html: function () {
@@ -311,8 +310,7 @@ router.delete('/:email', function (req, res) {
             res.status(400).send("Error deleting " + email);
         }
         else {
-
-            io.emit('delete_user', {email: email});
+            io.emit('delete_user', email);
 
             res.format({
                 html: function () {
