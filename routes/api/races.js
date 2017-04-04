@@ -192,9 +192,7 @@ router.get('/:name', function (req, res) {
         }
 
         let race = data;
-        if (race) {
-            io.to(race.name).emit('update_race_data', race);
-        }
+
         res.format({
             json: function () {
                 if (race) {
@@ -254,7 +252,8 @@ router.put('/:name', function (req, res) {
         }
         else {
 
-            io.emit('update_race', {name: name, body: req.body});
+            io.to(name).emit('update_race_data', success);
+            io.emit('update_race', success);
 
             res.format({
                 html: function () {

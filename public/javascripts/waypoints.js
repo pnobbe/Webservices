@@ -75,7 +75,7 @@ function selectRace(race) {
                         createWaypoint(marker.waypoint, function (data) {
                             if (data.status != null) {
                                 getWaypoint(marker.waypoint.id, function (data) {
-                                    race.waypoints.push(data)
+                                    race.waypoints.push(data);
                                     updateRace(race);
                                 });
                             } else {
@@ -135,7 +135,8 @@ function createWaypoint(waypoint, cb) {
         url: "/api/waypoints/",
         type: "POST",
         dataType: 'json',
-        data: {id: waypoint.id, name: waypoint.name},
+        contentType: "application/json",
+        data: JSON.stringify({id: waypoint.id, name: waypoint.name}),
         success: function (data) {
             console.log(data);
             cb(data);
@@ -151,6 +152,7 @@ function getWaypoint(id, cb) {
         url: "/api/waypoints/" + id,
         type: "GET",
         dataType: 'json',
+        contentType: "application/json",
         success: function (data) {
             console.log(data);
             cb(data);

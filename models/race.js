@@ -99,23 +99,35 @@ raceSchema.statics.updateRace = function (name, body, done) {
             race.name = body.name ? body.name : race.name;
             race.city = body.city ? body.city : race.city;
             race.owner = body.owner ? body.owner : race.owner;
+
+            // participants
             race.participants = body.participants ? body.participants.map(function (entree) {
-                if (entree instanceof mongoose.Types.ObjectId) {
-                    return entree;
-                }
-                return mongoose.Types.ObjectId(entree);
+                    if (entree instanceof mongoose.Types.ObjectId) {
+                        return entree;
+                    }
+                    return mongoose.Types.ObjectId(entree);
 
-            }) : race.participants;
-            race.waypoints = body.waypoints ? body.waypoints.map(function (entree) {
-                if (entree.passed_participants != null) {
-                    return entree;
-                }
-                if (entree instanceof mongoose.Types.ObjectId) {
-                    return {waypoint: entree, passed_participants: []}
-                }
-                return {waypoint: mongoose.Types.ObjectId(entree), passed_participants: []}
+                }) : race.participants;
 
-            }) : race.waypoints;
+
+            // waypoints
+        console.log(body);
+            race.waypoints = body.waypoints ? (body.waypoints.map(function (entree) {
+
+                    console.log(entree);
+                    if (entree.passed_participants != null) {
+                        return entree;
+                    }
+                    if (entree instanceof mongoose.Types.ObjectId) {
+                        return {waypoint: entree, passed_participants: []}
+                    }
+                    else if (entree._id) {
+                        return {waypoint: ((mongoose.model('Race', raceSchema))(entree)), passed_participants: []}
+                    }
+                    return {waypoint: mongoose.Types.ObjectId(entree), passed_participants: []}
+
+                })) : race.waypoints;
+
 
             race.startTime = body.startTime ? body.startTime : race.startTime;
             race.stopTime = body.stopTime ? body.stopTime : race.stopTime;
@@ -140,6 +152,8 @@ raceSchema.statics.updateRace = function (name, body, done) {
                     return;
                 }
             }
+
+            console.log(race);
 
             race.save(function (err, race) {
                 if (err)
@@ -295,8 +309,8 @@ raceSchema.statics.createNew = function (body, done) {
             newRace.owner = body.owner;
             newRace.participants = body.participants ? body.participants : [];
             newRace.waypoints = body.waypoints ? body.waypoints.map(function (entree) {
-                return {waypoint: entree, passed_participants: []}
-            }) : [];
+                    return {waypoint: entree, passed_participants: []}
+                }) : [];
 
 
             newRace.save(function (err, race) {
