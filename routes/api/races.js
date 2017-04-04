@@ -143,6 +143,7 @@ router.get('/:name', function (req, res) {
         name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     Race.findByName(name, function (errors, data) {
@@ -205,6 +206,7 @@ router.put('/:name', function (req, res) {
         name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
     // Call Race.update
     Race.updateRace(name, req.body, function (message, success) {
@@ -259,6 +261,7 @@ router.delete('/:name', function (req, res) {
         name = req.params.name;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     Race.deleteRace(name, function (errors) {

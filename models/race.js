@@ -78,6 +78,9 @@ raceSchema.statics.deleteRace = function (name, done) {
     });
 };
 
+/*
+ You can add plain old waypoint objects OR waypoint + passed_participant objects
+ */
 raceSchema.statics.updateRace = function (name, body, done) {
     if (!name) {
         return done("Missing input data.", false);
@@ -93,13 +96,47 @@ raceSchema.statics.updateRace = function (name, body, done) {
             if (!race)
                 return done("race does not exist", null);
 
-            // todo
-            console.log("TODO!!!!");
+            race.city = body.city ? body.city : race.city;
+            race.owner = body.owner ? body.owner : race.owner;
+            race.participants = body.participants ? body.participants : [];
+            race.waypoints = body.waypoints ? body.waypoints.map(function (entree) {
+                if (entree.passed_participants != null) {
+                    return entree.waypoint;
+                }
+                return {waypoint: entree, passed_participants: []}
+            }) : [];
 
-            race.save(function (err, newRace) {
+            race.startTime = body.startTime ? body.startTime : race.startTime;
+            race.stopTime = body.stopTime ? body.stopTime : race.stopTime;
+            if (race.startTime) {
+                if (race.creationDate > race.startTime) {
+                    done("startTime should not come before creationdate", null);
+                    return;
+                }
+            }
+
+            // Date validation
+            if (race.stopTime) {
+                if (!race.startTime) {
+                    done("stopTime should not come without startTime", null);
+                }
+                if (race.creationDate > race.stopTime) {
+                    done("stopTime should not come before creationdate", null);
+                    return;
+                }
+                if (race.startTime >= race.stopTime) {
+                    done("stopTime should come after startTime", null);
+                    return;
+                }
+            }
+
+            race.save(function (err, race) {
                 if (err)
-                    return done("Error while saving", null);
-                return done(null, newRace);
+                    done(err, null);
+                else {
+                    done(null, race);
+                }
+
             });
         }
     )
@@ -115,8 +152,6 @@ raceSchema.statics.createNew = function (body, done) {
         return done(null, false, "Missing input data.");
     }
 
-//  Whether we're signing up or connecting an account, we'll need
-    //  to know if the email address is in use.
     this.findOne({'name': {$regex: "^" + Regex.parse(body.name) + "$"}}, function (err, existingWaypoint) {
 
             // if there are any errors, return the error
@@ -142,8 +177,9 @@ raceSchema.statics.createNew = function (body, done) {
 
             newRace.save(function (err, race) {
                 if (err)
-                    throw err;
-                done(null, race);
+                    done(err, null);
+                else
+                    done(null, race);
             });
         }
     );

@@ -45,7 +45,7 @@ waypointSchema.statics.findAll = function (callback) {
         }
 
     });
-}
+};
 
 waypointSchema.statics.deleteWaypoint = function (id, done) {
     if (!id) {
@@ -80,7 +80,7 @@ waypointSchema.statics.updateWaypoint = function (id, body, done) {
 
             waypoint.save(function (err, updatedWaypoint) {
                 if (err)
-                    return done("Error while saving", null);
+                    done(err, null);
 
                 const Places = require('../service/places');
                 let p = new Places();
@@ -121,7 +121,7 @@ waypointSchema.statics.createNew = function (body, done) {
 
         newWaypoint.save(function (err, waypoint) {
             if (err)
-                throw err;
+                done(err, null);
 
             const Places = require('../service/places');
             let p = new Places();

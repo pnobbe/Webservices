@@ -156,12 +156,14 @@ router.get('/:email', function (req, res) {
         email = req.params.email;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     User.findByEmail(email, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred."});
+            return;
         }
 
         let user = data[0];
@@ -219,6 +221,7 @@ router.put('/:email', function (req, res) {
         email = req.params.email;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
     // Call User.update
     User.updateUser(email, req.body, function (message, success) {
@@ -274,6 +277,7 @@ router.delete('/:email', function (req, res) {
         email = req.params.email;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     User.deleteUser(email, function (errors) {

@@ -83,9 +83,9 @@ userSchema.statics.updateUser = function (email, body, done) {
 
         user.save(function (err, updatedUser) {
             if (err)
-                return done("Error while saving", null);
-
-            return done(null, updatedUser);
+                done(err, null);
+            else
+                return done(null, updatedUser);
         });
     });
 };
@@ -120,9 +120,9 @@ userSchema.statics.createNewLocal = function (body, done) {
 
         newUser.save(function (err) {
             if (err)
-                throw err;
-
-            return done(null, newUser);
+                done(err, null);
+            else
+                return done(null, newUser);
         });
     });
 };
@@ -158,8 +158,9 @@ userSchema.statics.createNewGoogle = function (token, profile, done) {
             // save the user
             newUser.save(function (err) {
                 if (err)
-                    throw err;
-                return done(null, newUser);
+                    done(err, null);
+                else
+                    return done(null, newUser);
             });
         }
     });
@@ -194,8 +195,9 @@ userSchema.statics.createNewFacebook = function (token, profile, done) {
 
                 newUser.save(function (err) {
                     if (err)
-                        throw err;
-                    return done(null, newUser);
+                        done(err, null);
+                    else
+                        return done(null, newUser);
                 });
             }
         }

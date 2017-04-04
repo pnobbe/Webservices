@@ -186,12 +186,14 @@ router.get('/:id', function (req, res) {
         id = req.params.id;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     Waypoint.findById(id, function (errors, data) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
+            return;
         }
 
         let waypoint = data;
@@ -270,6 +272,7 @@ router.put('/:id', function (req, res) {
         id = req.params.id;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
     // Call User.update
     Waypoint.updateWaypoint(id, req.body, function (message, waypoint) {
@@ -345,6 +348,7 @@ router.delete('/:id', function (req, res) {
         id = req.params.id;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
     Waypoint.deleteWaypoint(id, function (errors) {
@@ -375,6 +379,7 @@ router.get('/search/nearby/:city', function (req, res) {
         city = req.params.city;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
 
@@ -410,6 +415,7 @@ router.get('/search/nearby/:city/:criteria', function (req, res) {
         criteria = req.params.criteria;
     } else {
         res.status(400).send({error: "An error occurred"});
+        return;
     }
 
 
