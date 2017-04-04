@@ -20,6 +20,54 @@ function selectRace(race) {
                 addWaypoint(waypoint);
             });
         }
+
+        $.getJSON("spoofdata.json", function (data) {
+            fillMap(data);
+        });
+
+        function fillMap(data) {
+            $.ajax({
+                url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + "den%20bosch" + "&key=AIzaSyC41fhWPPWGRDLIeYoiegujStNytAa49Pc",
+                type: "GET",
+                dataType: 'json',
+                success: function (city) {
+                    if (city.results.length <= 0) {
+                        console.log("Unable to determine race location");
+                        return;
+                    }
+
+                    let pos = city.results[0].geometry.location;
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 14
+                    });
+                    var infoWindow = new google.maps.InfoWindow({map: map});
+
+                    // Try HTML5 geolocation.
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            map.setCenter(pos);
+                        }, function () {
+                            handleLocationError(true, infoWindow, map.getCenter());
+                        });
+                    } else {
+                        // Browser doesn't support Geolocation
+                        handleLocationError(false, infoWindow, map.getCenter());
+                    }
+                    data.forEach(function (waypoint) {
+                        if (waypointList[waypoint.id] == null) {
+                            addMarker(waypoint);
+                        }
+                    });
+
+                    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+                        infoWindow.setPosition(pos);
+                        infoWindow.setContent(browserHasGeolocation ?
+                            'Error: The Geolocation service failed.' :
+                            'Error: Your browser doesn\'t support geolocation.');
+                    }
+                }
+            });
+        }
     });
 
     /*
@@ -36,59 +84,8 @@ function selectRace(race) {
      });
      */
 
-    $.getJSON("spoofdata.json", function (data) {
-        fillMap(data);
-    });
 
-    function fillMap(data) {
-        $.ajax({
-            url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + "den%20bosch" + "&key=AIzaSyC41fhWPPWGRDLIeYoiegujStNytAa49Pc",
-            type: "GET",
-            dataType: 'json',
-            success: function (city) {
-                if (city.results.length <= 0) {
-                    console.log("Unable to determine race location");
-                    return;
-                }
-
-                let pos = city.results[0].geometry.location;
-                map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 14
-                });
-                var infoWindow = new google.maps.InfoWindow({map: map});
-
-                // Try HTML5 geolocation.
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        infoWindow.setPosition(pos);
-                        infoWindow.setContent('Race location:' + race.city);
-                        map.setCenter(pos);
-                    }, function () {
-                        handleLocationError(true, infoWindow, map.getCenter());
-                    });
-                } else {
-                    // Browser doesn't support Geolocation
-                    handleLocationError(false, infoWindow, map.getCenter());
-                }
-                data.forEach(function (waypoint) {
-                    if (waypointList[waypoint.id] == null) {
-                        addMarker(waypoint);
-                    }
-                });
-
-                function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-                    infoWindow.setPosition(pos);
-                    infoWindow.setContent(browserHasGeolocation ?
-                        'Error: The Geolocation service failed.' :
-                        'Error: Your browser doesn\'t support geolocation.');
-                }
-            }
-        });
-    }
 }
-
-socket.on('new_waypoint', function (waypoint) {
-});
 
 socket.on('delete_waypoint', function (id) {
     $("#waypointList").find('#' + id).remove();
@@ -98,6 +95,7 @@ socket.on('delete_waypoint', function (id) {
 socket.on('remove_marker', function (waypoint) {
     if (markers[waypoint.id] != null) {
         markers[waypoint.id].setMap(null);
+        addWaypoint({ waypoint: waypoint} );
     }
 });
 
@@ -139,9 +137,13 @@ function addMarker(waypoint) {
     }
 }
 
-function addWaypoint(waypoint) {
-    waypointList[waypoint.id] = waypoint;
-    $("#waypointList").append('<li class="list-group-item" id=' + object.id + '>' + waypoint.name + ' <button class="btn btn-danger btn-delete">Delete</button><button class="btn btn-error btn-warning">Edit</button></li>');
+function addWaypoint(object) {
+    console.log(object);
+    if (object.waypoint != null) {
+        let waypoint = object.waypoint;
+        waypointList[waypoint.id] = waypoint;
+        $("#waypointList").append('<li class="list-group-item" id=' + waypoint.id + '>' + waypoint.name + ' <button class="btn btn-danger btn-delete">Remove</button></li>');
+    }
 }
 
 function createWaypoint(waypoint, cb) {
@@ -179,16 +181,16 @@ function getWaypoint(id, cb) {
 
 function getWaypointsFromRace(name, cb) {
     $.ajax({
-        url: "/api/races/" + name,
+        url: "/api/races/" + name + "/waypoints",
         type: "GET",
         dataType: 'json',
         contentType: "application/json",
         success: function (data) {
             console.log(data);
-            cb(data.waypoints);
+            cb(data);
         }, error: function (data) {
             console.log(data);
-            cb(data.waypoints);
+            cb(data);
         }
     });
 }

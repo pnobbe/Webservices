@@ -65,13 +65,17 @@
         <!-- Races -->
         <h1>Races</h1>
         <hr>
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" class="form-control" id="name">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name">
+            </div>
         </div>
-        <div class="form-group">
-            <label for="city">City:</label>
-            <input type="text" class="form-control" id="city">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" class="form-control" id="city">
+            </div>
         </div>
         <button class="btn btn-success btn-new-race">New</button>
         <ul class="list-group" id="raceList">
@@ -80,9 +84,9 @@
         <!-- Waypoints -->
         <h1>Waypoints</h1>
         <hr>
+        <div id="map" style="height: 400px; width: 100%;"></div>
         <ul class="list-group" id="waypointList">
         </ul>
-        <div id="map" style="height: 400px; width: 100%;"></div>
     </div>
 </div>
 
