@@ -85,7 +85,7 @@ function deleteUser(email) {
 
 function getAllUsers(cb) {
     $.ajax({
-        url: "/api/users/all/1/99?params",
+        url: "/api/users/all/1/99",
         type: "GET",
         dataType: 'json',
         contentType: "application/json",

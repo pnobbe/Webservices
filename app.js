@@ -22,12 +22,14 @@ const session = require('express-session');
 const configDB = require('./config/db');
 const passportSocketIo = require("passport.socketio");
 const MongoStore = require('connect-mongo')(session);
+const socketio = require( "socket.io" );
+
 
 const config = require('./config/config');
+
 /**
  * Swagger
  */
-
 const swaggerDefinition = {
     info: {
         title: 'ReST Race API',
@@ -153,6 +155,7 @@ user.use(function (req) {
     }
 });
 
+app.set('user', user);
 
 console.log("Done.");
 
@@ -185,15 +188,10 @@ console.log("Done.");
 
 console.log("Opening sockets... ");
 
-// Run server to listen on port
-const server = app.listen(config.socketPort, () => {
-    console.log('Sockets listening on *:' + config.socketPort);
-});
+// Socket.io
+var io           = socketio();
+app.io           = io;
 
-const io = require('socket.io')(server);
-
-
-app.set('io', io);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('static'));
@@ -230,7 +228,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('remove_marker', function (data) {
-        console.log("WAYPOOINT");
         console.log(data.waypoint);
         io.sockets.in(data.roomname).emit('remove_marker', data.waypoint);
     });
@@ -252,7 +249,7 @@ io.on('connection', (socket) => {
     });
 
 });
-
+app.set('io', io);
 console.log("Done.");
 
 /**
