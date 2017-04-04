@@ -65,7 +65,7 @@ raceSchema.virtual('isActive').get(function () {
 
 
 raceSchema.statics.findByName = function (name, cb) {
-    return this.findOne({name: {$regex: "^" + Regex.parse(name) + "$"}}).exec(cb);
+    return this.findOne({name: {$regex: "^" + Regex.parse(name) + "$"}}).populate("owner waypoints.waypoint waypoints.passed_participants.user participants").exec(cb);
 };
 
 
@@ -128,9 +128,10 @@ raceSchema.statics.createNew = function (body, done) {
                 return done(null, false, "That name is already taken.");
 
             // create the user
-            let newRace = new (mongoose.model('Waypoint', raceSchema))();
+            let newRace = new (mongoose.model('Race', raceSchema))();
 
             newRace.name = body.name;
+            newRace.creationDate = Date.now();
             newRace.city = body.city;
             newRace.owner = body.owner;
             newRace.participants = body.participants ? body.participants : [];

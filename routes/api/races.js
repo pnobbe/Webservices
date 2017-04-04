@@ -86,7 +86,7 @@ router.post('/', function (req, res, next) {
     const io = req.app.get('io');
 
     // Call Race.create
-    Race.createNewLocal(req.body, function (errors, race, info) {
+    Race.createNew(req.body, function (errors, race, info) {
 
         if (errors) {
             res.status(400).send({error: "An error occurred"});
@@ -151,7 +151,7 @@ router.get('/:name', function (req, res) {
             res.status(400).send({error: "An error occurred."});
         }
 
-        let race = data[0];
+        let race = data;
         res.format({
             json: function () {
                 if (race) {
@@ -159,7 +159,7 @@ router.get('/:name', function (req, res) {
                 } else {
                     res.status(400).send({error: "No race found with that name."});
                 }
-            }.bind(res),
+            },
             html: function () {
                 if (race) {
                     var resp = "";
