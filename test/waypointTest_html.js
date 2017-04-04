@@ -90,7 +90,7 @@ describe('Waypoints', function () {
                 });
                 waypoint.save((err, user) => {
                     chai.request(app)
-                        .get('/api/waypoints/all' + waypoint.id)
+                        .get('/api/waypoints/' + waypoint.id)
                         .set('accept', 'text/html')
                         .send(waypoint)
                         .end((err, res) => {
