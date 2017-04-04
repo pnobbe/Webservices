@@ -20,17 +20,14 @@ socket.on('new_race', function (race) {
 });
 
 socket.on('delete_race', function (id) {
-    console.log(id);
-    $("#raceList").find('#' + id).remove();
+    $(document.getElementById(id)).remove();
 });
 
 socket.on('race_start', function (data) {
-    console.log("Race start");
 });
 
 socket.on('update_race_data', function (data) {
-    console.log("Room " + data.name + " emitted");
-    console.log(data);
+
 });
 
 socket.on('participant_joined'), function (data) {
