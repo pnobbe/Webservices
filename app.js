@@ -20,6 +20,9 @@ const ConnectRoles = require('connect-roles');
 
 const session = require('express-session');
 const configDB = require('./config/db');
+const passportSocketIo = require("passport.socketio");
+const MongoStore = require('connect-mongo')(session);
+
 
 
 const config = {
@@ -80,6 +83,9 @@ else {
     mongoose.connect(configDB.url);
 }
 
+const sessionStore = new MongoStore({ mongooseConnection: mongoose.connection });
+
+
 mongoose.Promise = require('q').Promise;
 //mongoose.Promise = global.Promise;
 
@@ -103,7 +109,7 @@ console.log("Initializing Passport... ");
 require('./routes/passport/init')(passport); // pass passport for configuration
 
 // Configuring Passport
-app.use(session({secret: 'GerardJolingIsEenBaas', resave: true, saveUninitialized: true})); // session secret
+app.use(session({key: 'express.sid', secret: 'GerardJolingIsEenBaas', store: sessionStore, resave: true, saveUninitialized: false})); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
@@ -202,13 +208,47 @@ let users = [];
 let waypoints = [];
 let races = [];
 
-/*
-io.set('authorization', function(handshakeData, cb) {
-    //use handshakeData to authorize this connection
-    //Node.js style "cb". ie: if auth is not successful, then cb('Not Successful');
-    //else cb(null, true); //2nd param "true" matters, i guess!!
-});
-*/
+
+//With Socket.io >= 1.0
+io.use(passportSocketIo.authorize({
+    cookieParser: cookieParser,       // the same middleware you registrer in express
+    key:          'express.sid',       // the name of the cookie where express/connect stores its session_id
+    secret:       'GerardJolingIsEenBaas',    // the session_secret to parse the cookie
+    store:        sessionStore,        // we NEED to use a sessionstore. no memorystore please
+    success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
+    fail:         onAuthorizeFail,     // *optional* callback on fail/error - read more below
+}));
+
+function onAuthorizeSuccess(data, accept){
+    console.log('successful connection to socket.io');
+
+    // The accept-callback still allows us to decide whether to
+    // accept the connection or not.
+    accept(null, true);
+
+    // OR
+
+    // If you use socket.io@1.X the callback looks different
+    accept();
+}
+
+function onAuthorizeFail(data, message, error, accept){
+    if(error)
+        throw new Error(message);
+    console.log('failed connection to socket.io:', message);
+
+    // We use this callback to log all of our failed connections.
+    accept(null, false);
+
+    // OR
+
+    // If you use socket.io@1.X the callback looks different
+    // If you don't want to accept the connection
+    if(error)
+        accept(new Error(message));
+    // this error will be sent to the user as a special error-package
+    // see: http://socket.io/docs/client-api/#socket > error-object
+}
 
 // Set socket.io listeners.
 io.on('connection', (socket) => {

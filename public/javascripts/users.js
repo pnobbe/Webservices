@@ -10,11 +10,11 @@ socket.on('delete_user', function (id) {
     $("#userList").find('#' + id).remove();
 });
 
-socket.on('user_start', function (data) {
+socket.on('user_start', function () {
     console.log("User start");
 });
 
-$('#userList').on('click', '.btn-delete', function (event) {
+$('#userList').on('click', '.btn-delete', function () {
     socket.emit('delete_user', $(this).closest("li").prop('id'));
 });
 

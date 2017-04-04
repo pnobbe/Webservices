@@ -62,24 +62,34 @@
         </div>
         <% } %>
 
+        <!-- Races -->
+        <h1>Races</h1>
+        <hr>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+        <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" class="form-control" id="city">
+        </div>
+        <button class="btn btn-success btn-new-race">New</button>
+        <ul class="list-group" id="raceList">
+        </ul>
+
         <!-- Waypoints -->
         <h1>Waypoints</h1>
         <hr>
         <button class="btn btn-success btn-new-waypoint">New</button>
         <ul class="list-group" id="waypointList">
         </ul>
-
-        <!-- Races -->
-        <h1>Races</h1>
-        <hr>
-        <button class="btn btn-success btn-new-race">New</button>
-        <ul class="list-group" id="raceList">
-        </ul>
+        <div id="map" style="height: 400px; width: 100%;"></div>
     </div>
 </div>
 
 </div>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC41fhWPPWGRDLIeYoiegujStNytAa49Pc"></script>
 <script type="text/javascript" src="/javascripts/socket.io.min.js"></script>
 <script type="text/javascript" src="/javascripts/client.js"></script>
 <script type="text/javascript" src="/javascripts/races.js"></script>

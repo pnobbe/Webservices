@@ -15,7 +15,6 @@ module.exports = class Places {
         this.geoCoder = NodeGeocoder(this.config.geo_options);
     }
 
-
     getNearbyLocations(lat, lng) {
         var self = this;
         // using Promises
