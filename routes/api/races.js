@@ -3,7 +3,8 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const Race = mongoose.model('Race');
-
+const User = mongoose.model('User');
+const Waypoint = mongoose.model('Waypoint');
 /**
  * @swagger
  * definitions:
@@ -42,7 +43,7 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data);
+                    res.status(200).send(data.map(Race.printJSON));
                 },
                 html: function () {
                     let resp = "<div>";
@@ -156,7 +157,7 @@ router.get('/:name', function (req, res) {
         res.format({
             json: function () {
                 if (race) {
-                    res.status(200).send(race);
+                    res.status(200).send(Race.printJSON(race));
                 } else {
                     res.status(400).send({error: "No race found with that name."});
                 }
@@ -178,6 +179,7 @@ router.get('/:name', function (req, res) {
 
 
 });
+
 
 /**
  * @swagger
@@ -227,7 +229,7 @@ router.put('/:name', function (req, res) {
                     res.status(200).send(resp);
                 },
                 json: function () {
-                    res.status(200).send(success);
+                    res.status(200).send(Race.printJSON(success));
                 }
             })
         }

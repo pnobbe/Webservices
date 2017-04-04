@@ -145,6 +145,53 @@ raceSchema.statics.updateRace = function (name, body, done) {
 }
 ;
 
+raceSchema.statics.printJSON = function (race) {
+    var obj = {
+        name: race.name,
+        city: race.city,
+        creationdate: race.creationDate,
+        startTime: race.startTime,
+        stopTime: race.stopTime
+
+    };
+    obj.owner = race.owner;
+    if (race.owner != null && race.owner instanceof User) {
+        obj.owner = User.printJSON(race.owner);
+    }
+
+    obj.participants = race.participants;
+    if (race.participants != null && race.participants.length > 0 && race.participants[0] instanceof User) {
+        obj.participants = race.participants.map(User.printJSON);
+    }
+    obj.waypoints = race.waypoints;
+
+    if (race.waypoints != null && race.waypoints.length > 0 && race.waypoints[0].waypoint && race.waypoints[0].waypoint instanceof Waypoint) {
+        obj.waypoints = race.waypoints.map(data => {
+
+            var waypoint = Waypoint.printJSON(data.waypoint);
+
+            return {
+                waypoint: waypoint,
+                participants: data.passed_participants.map(data => {
+
+                    if (data.user instanceof User) {
+                        return {
+                            user: User.printJSON(data.user),
+                            time: data.time
+                        }
+                    }
+                    else {
+                        return data;
+                    }
+                })
+
+            }
+        });
+    }
+
+    return obj;
+};
+
 
 raceSchema.statics.createNew = function (body, done) {
 

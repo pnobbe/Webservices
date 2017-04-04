@@ -52,9 +52,7 @@ router.get('/', function (req, res, next) {
 
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(el => {
-                        return {name: el.name, email: el.email};
-                    }));
+                    res.status(200).send(data.map(User.printJSON));
                 },
                 html: function () {
                     let resp = "<div>";
@@ -170,7 +168,7 @@ router.get('/:email', function (req, res) {
         res.format({
             json: function () {
                 if (user) {
-                    res.status(200).send({name: user.name, email: user.email});
+                    res.status(200).send(User.printJSON(user));
                 } else {
                     res.status(400).send({error: "No user found with that email."});
                 }
@@ -243,7 +241,7 @@ router.put('/:email', function (req, res) {
                     res.status(200).send(resp);
                 },
                 json: function () {
-                    res.status(200).send({name: success.name, email: success.email});
+                    res.status(200).send(User.printJSON(success));
                 }
             })
         }

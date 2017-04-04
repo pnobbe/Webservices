@@ -49,18 +49,7 @@ router.get('/', function (req, res, next) {
         else {
             res.format({
                 json: function () {
-                    res.status(200).send(data.map(el => {
-                        if (el.lat) {
-                            return {
-                                id: el.waypoint.id,
-                                name: el.waypoint.name,
-                                address: el.address,
-                                lat: el.lat,
-                                lng: el.lng
-                            };
-                        }
-                        return {id: el.waypoint.id, name: el.waypoint.name};
-                    }));
+                    res.status(200).send(data.map(Waypoint.printJSON));
                 },
                 html: function () {
                     let resp = "<div>";
@@ -121,7 +110,7 @@ router.post('/', function (req, res, next) {
         }
         else {
 
-            io.emit('new_waypoint', { body: req.body });
+            io.emit('new_waypoint', {body: req.body});
 
             res.format({
                     html: function () {
@@ -130,20 +119,11 @@ router.post('/', function (req, res, next) {
 
                     json: function () {
 
-                        var obj = {
-                            id: waypoint.waypoint.id,
-                            name: waypoint.waypoint.name
 
-                        };
-
-                        if (waypoint.lat) {
-                            obj.address = waypoint.address;
-                            obj.lat = waypoint.lat;
-                            obj.lng = waypoint.lng;
-                        }
-
-
-                        res.status(200).send({message: "Waypoint has been created successfully.", waypoint: obj});
+                        res.status(200).send({
+                            message: "Waypoint has been created successfully.",
+                            waypoint: Waypoint.printJSON(waypoint)
+                        });
                     }
                 }
             )
@@ -199,18 +179,7 @@ router.get('/:id', function (req, res) {
                 console.log("json");
                 if (waypoint) {
 
-                    var obj = {
-                        id: waypoint.waypoint.id,
-                        name: waypoint.waypoint.name
-
-                    };
-
-                    if (waypoint.lat) {
-                        obj.address = waypoint.address;
-                        obj.lat = waypoint.lat;
-                        obj.lng = waypoint.lng;
-                    }
-                    res.status(200).send(obj);
+                    res.status(200).send(Waypoint.printJSON(waypoint));
 
                 } else {
                     res.status(400).send({error: "No waypoint found with that id."});
@@ -283,18 +252,8 @@ router.put('/:id', function (req, res) {
 
             res.format({
                 json: function () {
-                    var obj = {
-                        id: waypoint.waypoint.id,
-                        name: waypoint.waypoint.name
 
-                    };
-
-                    if (waypoint.lat) {
-                        obj.address = waypoint.address;
-                        obj.lat = waypoint.lat;
-                        obj.lng = waypoint.lng;
-                    }
-                    res.status(200).send(obj);
+                    res.status(200).send(Waypoint.printJSON(waypoint));
 
                 },
                 html: function () {
@@ -386,21 +345,7 @@ router.get('/search/nearby/:city', function (req, res) {
 
     p.getNearbyLocationsbyCity(city).then(data => {
 
-        res.status(200).send(data.map(waypoint => {
-            var obj = {
-                id: waypoint.waypoint.id,
-                name: waypoint.waypoint.name
-
-            };
-
-            if (waypoint.lat) {
-                obj.address = waypoint.address;
-                obj.lat = waypoint.lat;
-                obj.lng = waypoint.lng;
-            }
-
-            return obj;
-        }));
+        res.status(200).send(data.map(Waypoint.printJSON));
     });
 });
 
@@ -422,21 +367,7 @@ router.get('/search/nearby/:city/:criteria', function (req, res) {
 
     p.getNearbybyCity(city, criteria).then(data => {
 
-        res.status(200).send(data.map(waypoint => {
-            var obj = {
-                id: waypoint.waypoint.id,
-                name: waypoint.waypoint.name
-
-            };
-
-            if (waypoint.lat) {
-                obj.address = waypoint.address;
-                obj.lat = waypoint.lat;
-                obj.lng = waypoint.lng;
-            }
-
-            return obj;
-        }));
+        res.status(200).send(data.map(Waypoint.printJSON));
     });
 });
 //export this router to use in our index.js

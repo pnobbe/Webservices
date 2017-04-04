@@ -132,5 +132,21 @@ waypointSchema.statics.createNew = function (body, done) {
     });
 };
 
+waypointSchema.statics.printJSON = function (data) {
+    var waypoint = {
+        id: data.waypoint.id,
+        name: data.waypoint.name
+
+    };
+
+    if (data.lat) {
+        waypoint.address = data.address;
+        waypoint.lat = data.lat;
+        waypoint.lng = data.lng;
+    }
+
+    return waypoint
+};
+
 
 const Waypoint = mongoose.model('Waypoint', waypointSchema);
