@@ -133,37 +133,60 @@ waypointSchema.statics.createNew = function (body, done) {
 };
 
 waypointSchema.statics.printJSON = function (data) {
-    var waypoint = {
-        _id: data.waypoint._id,
-        id: data.waypoint.id,
-        name: data.waypoint.name
 
-    };
+    if (data instanceof Waypoint) {
+        var waypoint = {
+            _id: data._id,
+            id: data.id,
+            name: data.name
 
-    if (data.lat) {
-        waypoint.address = data.address;
-        waypoint.lat = data.lat;
-        waypoint.lng = data.lng;
+        };
+        return waypoint
+    }
+    else {
+        var waypoint = {
+            _id: data.waypoint._id,
+            id: data.waypoint.id,
+            name: data.waypoint.name
+
+        };
+
+        if (data.lat) {
+            waypoint.address = data.address;
+            waypoint.lat = data.lat;
+            waypoint.lng = data.lng;
+        }
+
+        return waypoint
     }
 
-    return waypoint
 };
 
 waypointSchema.statics.printHTML = function (data) {
 
-    var resp = "<div>";
-    resp += "<h3>" + data.waypoint._id + "</h3>";
-    resp += "<h3>" + data.waypoint.name + "</h3>";
-    resp += "<h2>" + data.waypoint.id + "</h2>";
-
-    if (data.lat) {
-        resp += "<h3>" + data.address + "</h3>";
-        resp += "<h4 class='LAT'>" + data.lat + "</h4>";
-        resp += "<h4 class='LNG'>" + data.lng + "</h4>";
+    if (data instanceof Waypoint) {
+        var resp = "<div>";
+        resp += "<h3>" + data._id + "</h3>";
+        resp += "<h3>" + data.name + "</h3>";
+        resp += "<h2>" + data.id + "</h2>";
+        resp += "</div>";
+        return resp;
     }
-    resp += "</div>";
+    else {
+        var resp = "<div>";
+        resp += "<h3>" + data.waypoint._id + "</h3>";
+        resp += "<h3>" + data.waypoint.name + "</h3>";
+        resp += "<h2>" + data.waypoint.id + "</h2>";
 
-    return resp;
+        if (data.lat) {
+            resp += "<h3>" + data.address + "</h3>";
+            resp += "<h4 class='LAT'>" + data.lat + "</h4>";
+            resp += "<h4 class='LNG'>" + data.lng + "</h4>";
+        }
+        resp += "</div>";
+
+        return resp;
+    }
 };
 
 const Waypoint = mongoose.model('Waypoint', waypointSchema);

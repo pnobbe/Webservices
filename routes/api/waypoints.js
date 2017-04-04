@@ -104,7 +104,7 @@ router.post('/', function (req, res, next) {
 
             res.format({
                     html: function () {
-                        res.status(200).send('<p> Waypoint has been created successfully. </p>');
+                        res.status(200).send('<p>Waypoint has been created successfully.</p>');
                     },
 
                     json: function () {
@@ -181,7 +181,7 @@ router.get('/:id', function (req, res) {
 
                     res.status(200).send(Waypoint.printHTML(waypoint));
                 } else {
-                    res.status(400).send('<strong>No waypoint found with that id. </strong>');
+                    res.status(400).send('<strong>No waypoint found with that id.</strong>');
                 }
             }
         });
