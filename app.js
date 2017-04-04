@@ -187,6 +187,8 @@ const server = app.listen(3001, () => {
 
 const io = require('socket.io')(server);
 
+
+
 app.set('io', io);
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -200,12 +202,18 @@ let users = [];
 let waypoints = [];
 let races = [];
 
+/*
+io.set('authorization', function(handshakeData, cb) {
+    //use handshakeData to authorize this connection
+    //Node.js style "cb". ie: if auth is not successful, then cb('Not Successful');
+    //else cb(null, true); //2nd param "true" matters, i guess!!
+});
+*/
+
 // Set socket.io listeners.
 io.on('connection', (socket) => {
     connectedClients++;
     console.log('SOCKET.IO: Client connected. Total clients: ' + connectedClients);
-
-    socket.emit('data', {waypoints: waypoints, races: races});
 
     socket.broadcast.emit('new_client', {id: socket.id, count: connectedClients});
 
@@ -216,6 +224,11 @@ io.on('connection', (socket) => {
 
     socket.on('new_waypoint', function () {
         waypointCount++;
+        app.get('/api/users', function (req, res) {
+            console.log(req);
+            res.send(req);
+        });
+
         waypoints.push(waypointCount);
         io.sockets.emit("new_waypoint", waypointCount);
     });
