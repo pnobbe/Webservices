@@ -108,7 +108,7 @@ router.post('/', function (req, res, next) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> User has been created successfully. </p>');
+                    res.status(200).send('<p>User has been created successfully.</p>');
                 },
 
                 json: function () {
@@ -174,7 +174,7 @@ router.get('/:email', function (req, res) {
                 if (user) {
                     res.status(200).send(User.printHTML(user));
                 } else {
-                    res.status(400).send('<strong>No user found with that email. </strong>');
+                    res.status(400).send('<strong>No user found with that email.</strong>');
                 }
             }
         });
@@ -275,7 +275,7 @@ router.delete('/:email', function (req, res) {
 
             res.format({
                 html: function () {
-                    res.status(200).send('<p> Deleted succesfully </p>');
+                    res.status(200).send('<p>Deleted succesfully</p>');
                 },
 
                 json: function () {

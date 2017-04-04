@@ -21,7 +21,7 @@ waypointSchema.statics.findById = function (id, cb) {
         else {
             const Places = require('../service/places');
             let p = new Places();
-            return p.waypointsToCoordinates(data).then(newData => {
+            return p.createWaypoints(data).then(newData => {
                 cb(errors, newData[0]);
             });
         }
@@ -39,7 +39,7 @@ waypointSchema.statics.findAll = function (callback) {
         else {
             const Places = require('../service/places');
             let p = new Places();
-            return p.waypointsToCoordinates(data).then(newData => {
+            return p.createWaypoints(data).then(newData => {
                 callback(errors, newData);
             });
         }
@@ -84,7 +84,7 @@ waypointSchema.statics.updateWaypoint = function (id, body, done) {
 
                 const Places = require('../service/places');
                 let p = new Places();
-                return p.waypointsToCoordinates([updatedWaypoint]).then(newData => {
+                return p.createWaypoints([updatedWaypoint]).then(newData => {
                     done(null, newData[0]);
                 });
             });
@@ -125,7 +125,7 @@ waypointSchema.statics.createNew = function (body, done) {
 
             const Places = require('../service/places');
             let p = new Places();
-            return p.waypointsToCoordinates([waypoint]).then(newData => {
+            return p.createWaypoints([waypoint]).then(newData => {
                 done(null, newData[0]);
             });
         });
