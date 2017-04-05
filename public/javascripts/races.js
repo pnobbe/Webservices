@@ -19,8 +19,15 @@ socket.on('new_race', function (race) {
     addRace(race);
 });
 
-socket.on('delete_race', function (id) {
-    $(document.getElementById(id)).remove();
+socket.on('delete_race', function (name) {
+    $(document.getElementById(name)).remove();
+    if (curRace != null) {
+        if (curRace.name == name) {
+            $('#waypointList').empty();
+            $('#map').empty();
+            curRace = null;
+        }
+    }
 });
 
 socket.on('race_start', function (data) {
@@ -39,8 +46,8 @@ socket.on('participant_left'), function (data) {
 };
 
 $(".btn-new-race").click(function () {
-    let name = $('#name').val();
-    let city = $('#city').val();
+    let name = $('#name').val().trim();
+    let city = $('#city').val().trim();
 
     if (name == "" || city == "") {
         return;
