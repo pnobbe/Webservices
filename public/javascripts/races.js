@@ -19,8 +19,13 @@ socket.on('new_race', function (race) {
     addRace(race);
 });
 
-socket.on('delete_race', function (id) {
-    $(document.getElementById(id)).remove();
+socket.on('delete_race', function (name) {
+    $(document.getElementById(name)).remove();
+    if (curRace.name == name) {
+        $('#waypointList').empty();
+        $('#map').empty();
+        curRace = null;
+    }
 });
 
 socket.on('race_start', function (data) {

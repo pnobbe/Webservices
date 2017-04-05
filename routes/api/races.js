@@ -305,6 +305,7 @@ router.delete('/:name', function (req, res) {
         else {
 
             io.emit('delete_race', name);
+            console.log(name);
             res.format({
                 html: function () {
                     res.status(200).send('<p>Deleted succesfully</p>');
