@@ -49,7 +49,7 @@ const Regex = require('../../service/regex');
  *     tags:
  *       - Users
  *     description: Returns all users. (Authorization required)
- *     provides:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
@@ -215,7 +215,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Users
  *     description: Returns a single user
- *     provides:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:

@@ -63,7 +63,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Races
  *     description: Returns patricipants
- *     provides:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
