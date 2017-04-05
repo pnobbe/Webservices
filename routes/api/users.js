@@ -48,7 +48,7 @@ const Regex = require('../../service/regex');
  *   get:
  *     tags:
  *       - Users
- *     description: Returns all users. (Authorization required)
+ *     description: Returns all users. (Authorization required). Available filters are email and name
  *     produces:
  *       - application/json
  *       - text/html
