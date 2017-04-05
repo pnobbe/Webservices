@@ -82,6 +82,12 @@ const Regex = require('../../service/regex');
  *             required: true
  *           notice:
  *             type: string
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');

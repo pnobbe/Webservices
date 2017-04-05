@@ -80,14 +80,15 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
                 html: function () {
                     let resp = "<div>";
                     if (error) {
-                        resp = "<h3>Notice " + error + "</h3>";
+                        resp += "<h3>Notice " + error + "</h3>";
                     }
-                    resp = "<h3>PAGE " + page + "</h3>";
-                    resp = "<h3>LIMIT " + limit + "</h3>";
-                    resp = "<h1>DATA </h1>";
+                    resp += "<h3>PAGE " + page + "</h3>";
+                    resp += "<h3>LIMIT " + limit + "</h3>";
+                    resp += "<h1>DATA </h1>";
                     data.forEach(function (data) {
                         resp += Race.printHTML(data);
                     });
+
                     resp += "</div>";
                     res.status(200).send(resp);
                 }
