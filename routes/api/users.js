@@ -66,7 +66,6 @@ const Regex = require('../../service/regex');
  *     responses:
  *       "200":
  *         description: An array of users
- *         schema:
  *         type: object
  *         properties:
  *           result:
