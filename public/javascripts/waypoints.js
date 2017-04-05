@@ -21,70 +21,68 @@ function selectRace(race) {
             });
         }
 
+        /* // uncomment to hardcode data
         $.getJSON("spoofdata.json", function (data) {
             fillMap(data);
         });
+        */
 
-        function fillMap(data) {
-            $.ajax({
-                url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + "den%20bosch" + "&key=AIzaSyC41fhWPPWGRDLIeYoiegujStNytAa49Pc",
-                type: "GET",
-                dataType: 'json',
-                success: function (city) {
-                    if (city.results.length <= 0) {
-                        console.log("Unable to determine race location");
-                        return;
-                    }
+        $.ajax({
+            url: "/api/waypoints/search/nearby/" + race.city + "/cafe",
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                fillMap(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    });
+}
 
-                    let pos = city.results[0].geometry.location;
-                    map = new google.maps.Map(document.getElementById('map'), {
-                        zoom: 14
-                    });
-                    var infoWindow = new google.maps.InfoWindow({map: map});
+function fillMap(data) {
+    $.ajax({
+        url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + curRace.city + "&key=AIzaSyC41fhWPPWGRDLIeYoiegujStNytAa49Pc",
+        type: "GET",
+        dataType: 'json',
+        success: function (city) {
+            if (city.results.length <= 0) {
+                console.log("Unable to determine race location");
+                return;
+            }
 
-                    // Try HTML5 geolocation.
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(function (position) {
-                            map.setCenter(pos);
-                        }, function () {
-                            handleLocationError(true, infoWindow, map.getCenter());
-                        });
-                    } else {
-                        // Browser doesn't support Geolocation
-                        handleLocationError(false, infoWindow, map.getCenter());
-                    }
-                    data.forEach(function (waypoint) {
-                        if (waypointList[waypoint.id] == null) {
-                            addMarker(waypoint);
-                        }
-                    });
+            let pos = city.results[0].geometry.location;
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14
+            });
+            var infoWindow = new google.maps.InfoWindow({map: map});
 
-                    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-                        infoWindow.setPosition(pos);
-                        infoWindow.setContent(browserHasGeolocation ?
-                            'Error: The Geolocation service failed.' :
-                            'Error: Your browser doesn\'t support geolocation.');
-                    }
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    map.setCenter(pos);
+                }, function () {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+            data.forEach(function (waypoint) {
+                if (waypointList[waypoint.id] == null) {
+                    addMarker(waypoint);
                 }
             });
+
+            function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+                infoWindow.setPosition(pos);
+                infoWindow.setContent(browserHasGeolocation ?
+                    'Error: The Geolocation service failed.' :
+                    'Error: Your browser doesn\'t support geolocation.');
+            }
         }
     });
-
-    /*
-     $.ajax({
-     url: "/api/waypoints/search/nearby/" + race.city + "/cafe",
-     type: "GET",
-     dataType: 'json',
-     success: function (data) {
-     fillMap(data);
-     },
-     error: function (data) {
-     console.log(data);
-     }
-     });
-     */
-
-
 }
 
 socket.on('delete_waypoint', function (id) {
@@ -95,7 +93,7 @@ socket.on('delete_waypoint', function (id) {
 socket.on('remove_marker', function (waypoint) {
     if (markers[waypoint.id] != null) {
         markers[waypoint.id].setMap(null);
-        addWaypoint({ waypoint: waypoint} );
+        addWaypoint({waypoint: waypoint});
     }
 });
 

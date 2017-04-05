@@ -30,7 +30,7 @@ const Regex = require('../../service/regex');
  *     tags:
  *       - Users
  *     description: Returns all users
- *     accepts:
+ *     produces:
  *       - application/json
  *       - text/html
  *     responses:
@@ -161,7 +161,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Waypoints
  *     description: Returns a single waypoint
- *     accepts:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
@@ -223,7 +223,8 @@ router.get('/:id', function (req, res) {
  *     tags:
  *      - Waypoints
  *     description: Updates a single waypoint
- *     produces: application/json
+ *     produces:
+ *      - application/json
  *     parameters:
  *       id: waypoint
  *       in: body
@@ -327,7 +328,7 @@ router.delete('/:id', function (req, res) {
  *     produces:
  *       - application/json
  *     parameters:
- *       - id: waypoint
+ *       - name: waypoint
  *         description: waypoint id
  *         in: path
  *         required: true
@@ -381,7 +382,7 @@ router.get('/search/nearby/:city', function (req, res) {
  *     produces:
  *       - application/json
  *     parameters:
- *       - id: waypoint
+ *       - name: waypoint
  *         description: waypoint id
  *         in: path
  *         required: true

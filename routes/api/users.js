@@ -49,7 +49,7 @@ const Regex = require('../../service/regex');
  *     tags:
  *       - Users
  *     description: Returns all users. (Authorization required)
- *     accepts:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
@@ -221,7 +221,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Users
  *     description: Returns a single user
- *     accepts:
+ *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
@@ -328,19 +328,19 @@ router.put('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:email:
+ * /users/{email}:
  *   delete:
  *     tags:
  *       - Users
- *     description: Deletes a single user
+ *     description: "Deletes a single user"
  *     produces:
  *       - application/json
  *     parameters:
- *       - email: user
- *         description: User's id
- *         in: path
+ *       - name: "email"
+ *         description: "User's email"
+ *         in: "path"
  *         required: true
- *         type: string
+ *         type: "string"
  *     responses:
  *       200:
  *         description: Successfully deleted
