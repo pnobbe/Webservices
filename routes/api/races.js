@@ -25,9 +25,12 @@ const Waypoint = mongoose.model('Waypoint');
  *         items:
  *           $ref: '#/definitions/User'
  *       waypoints:
- *         type: array
- *         items:
- *           $ref: '#/definitions/Waypoint'
+ *         type: object
+ *         properties:
+ *           waypoint:
+ *             $ref: '#/definitions/Waypoint'
+ *           passed_participants:
+ *             $ref: '#/definitions/passed_participants'
  *     required:
  *      - name
  *      - city
