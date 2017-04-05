@@ -67,20 +67,20 @@ const Regex = require('../../service/regex');
  *       "200":
  *         description: An array of users
  *         type: object
- *         properties:
- *           result:
- *             type: array
- *             items:
- *               $ref: '#/definitions/User'
- *             required: true
- *           page:
- *             type: number
- *             required: true
- *           limit:
- *             type: number
- *             required: true
- *           notice:
- *             type: string
+ *           properties:
+ *             result:
+ *               type: array
+ *               items:
+ *                 $ref: '#/definitions/User'
+ *               required: true
+ *             page:
+ *               type: number
+ *               required: true
+ *             limit:
+ *               type: number
+ *               required: true
+ *             notice:
+ *               type: string
  */
 router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');
