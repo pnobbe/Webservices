@@ -25,6 +25,23 @@ const Regex = require('../../service/regex');
 
 /**
  * @swagger
+ * definitions:
+ *   passed_participants:
+ *     properties:
+ *       passed_participants:
+ *         type: array
+ *         items:
+ *           type: object
+ *           properties:
+ *             user:
+ *               $ref: '#/definitions/User'
+ *             time:
+ *               type: string
+ *               format: date
+ */
+
+/**
+ * @swagger
  * /waypoints/:
  *   get:
  *     tags:

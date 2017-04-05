@@ -12,24 +12,73 @@ const Waypoint = mongoose.model('Waypoint');
  *     properties:
  *       name:
  *         type: string
+ *       city:
+ *         type: string
+ *       creationdate:
+ *         type: string
+ *         format: date
+ *       owner:
+ *         type: object
+ *         $ref: '#/definitions/User'
+ *       participants:
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/User'
+ *       waypoints:
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/Waypoint'
+ *     required:
+ *      - name
+ *      - city
  */
-
 
 /**
  * @swagger
- * /races/all:
+ * /races/all/{page}/{limit}:
  *   get:
  *     tags:
  *       - Races
- *     description: Returns all races
+ *     description: Returns all races.
  *     produces:
  *       - application/json
  *       - text/html
+ *     parameters:
+ *       - name: page
+ *         description: pagination return page
+ *         in: path
+ *         required: false
+ *         type: number
+ *       - name: limit
+ *         description: pagination page size
+ *         in: path
+ *         required: false
+ *         type: number
  *     responses:
  *       200:
  *         description: An array of races
  *         schema:
- *           $ref: '#/definitions/Race'
+ *         type: object
+ *         properties:
+ *           result:
+ *             type: array
+ *             items:
+ *               $ref: '#/definitions/Race'
+ *             required: true
+ *           page:
+ *             type: number
+ *             required: true
+ *           limit:
+ *             type: number
+ *             required: true
+ *           notice:
+ *             type: string
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/all/:page?/:limit?', function (req, res, next) {
     const io = req.app.get('io');
@@ -106,6 +155,7 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *     description: Creates a new race
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: race
  *         description: Race object
@@ -117,7 +167,7 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *       200:
  *         description: Successfully created
  *       400:
- *         description: An error occurred.
+ *         description: Error creating new user
  */
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
@@ -155,7 +205,7 @@ router.post('/', function (req, res, next) {
 
 /**
  * @swagger
- * /races/:name:
+ * /races/{name}:
  *   get:
  *     tags:
  *       - Races
@@ -174,6 +224,8 @@ router.post('/', function (req, res, next) {
  *         description: A single race
  *         schema:
  *           $ref: '#/definitions/Race'
+ *       400:
+ *         description: Error retrieving race
  */
 router.get('/:name', function (req, res) {
     const io = req.app.get('io');
@@ -218,12 +270,14 @@ router.get('/:name', function (req, res) {
 
 /**
  * @swagger
- * /races/:name:
+ * /races/{name}:
  *   put:
  *     tags:
  *      - Races
  *     description: Updates a single race
- *     produces: application/json
+ *     produces:
+ *       - application/json
+ *       - text/html
  *     parameters:
  *       name: race
  *       in: body
@@ -234,6 +288,8 @@ router.get('/:name', function (req, res) {
  *     responses:
  *       200:
  *         description: Updated race
+ *       400:
+ *         description: Error updating race
  */
 router.put('/:name', function (req, res) {
     const io = req.app.get('io');
@@ -270,13 +326,14 @@ router.put('/:name', function (req, res) {
 
 /**
  * @swagger
- * /races/:name:
+ * /races/{name}:
  *   delete:
  *     tags:
  *       - Races
  *     description: Deletes a single race
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: race
  *         description: Race's names
@@ -286,6 +343,8 @@ router.put('/:name', function (req, res) {
  *     responses:
  *       200:
  *         description: Successfully deleted
+ *       400:
+ *         description: Error deleting race
  */
 router.delete('/:name', function (req, res) {
     const io = req.app.get('io');

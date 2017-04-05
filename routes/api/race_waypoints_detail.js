@@ -41,27 +41,28 @@ function parse(req, res, callback) {
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/{name}/waypoints/{id}:
  *   post:
  *     tags:
  *       - Races
- *     description: Creates patricipants
+ *     description: Creates waypoint in race.
  *     produces:
+ *       - application/json
  *     responses:
  *       404:
- *         description: not implemented.
+ *         description: Please update the race using PUT to achieve this result.
  */
 router.post('/', function (req, res, next) {
-    res.status(404).send("Not implemented");
+    res.status(404).send("Please update the race using PUT to achieve this result.");
 });
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/{name}/waypoints/{id}:
  *   get:
  *     tags:
  *       - Races
- *     description: Returns patricipants
+ *     description: Returns all waypoints part of the race.
  *     produces:
  *       - application/json
  *       - text/html
@@ -71,11 +72,22 @@ router.post('/', function (req, res, next) {
  *         in: path
  *         required: true
  *         type: string
+ *       - name: id
+ *         description: Waypoint's id
+ *         in: path
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: A single race
+ *         description: An array of waypoints
  *         schema:
- *           $ref: '#/definitions/Race'
+ *         type: object
+ *         properties:
+ *           result:
+ *             type: array
+ *             items:
+ *               $ref: '#/definitions/Waypoint'
+ *             required: true
  */
 router.get('/', function (req, res) {
 
@@ -127,22 +139,28 @@ router.get('/', function (req, res) {
 
 /**
  * @swagger
- * /races/:name/waypoints:
+ * /races/{name}/waypoints/{id}:
  *   put:
  *     tags:
  *      - Races
- *     description: Updates waypoint
- *     produces: application/json
+ *     description: Updates a single waypoints passed participants
+ *     produces:
+ *       - application/json
+ *       - text/html
  *     parameters:
- *       name: race
+ *     - name: waypoint
  *       in: body
- *       description: Fields for the Race resource
+ *       description: Waypoint object
  *       schema:
- *         type: object
- *         $ref: '#/definitions/Race'
+ *         $ref: '#/definitions/Waypoint'
+ *     - name: passed_participants
+ *       in: body
+ *       description: Array of passed participants
+ *       schema:
+ *         $ref: '#/definitions/passed_participants'
  *     responses:
  *       200:
- *         description: Updated passed people
+ *         description: Updated passed participants.
  */
 router.put('/', function (req, res) {
     const io = req.app.get('io');
@@ -195,16 +213,22 @@ router.put('/', function (req, res) {
 
 /**
  * @swagger
- * /races/:name/waypoints/:id:
+ * /races/{name}/waypoints/{id}:
  *   delete:
  *     tags:
  *       - Races
- *     description: Deletes patricipants
+ *     description: Deletes participants
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - name: race
- *         description: Race's names
+ *       - name: name
+ *         description: Race's name
+ *         in: path
+ *         required: true
+ *         type: string
+ *       - name: id
+ *         description: Waypoint's id
  *         in: path
  *         required: true
  *         type: string

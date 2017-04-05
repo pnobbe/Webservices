@@ -45,11 +45,12 @@ function parse(req, res, callback) {
  *   post:
  *     tags:
  *       - Races
- *     description: Creates patricipants
+ *     description: Creates participants
  *     produces:
+ *       - application/json
  *     responses:
  *       404:
- *         description: not implemented.
+ *         description: Nt implemented.
  */
 router.post('/', function (req, res, next) {
     res.status(404).send("Not implemented");
@@ -57,11 +58,11 @@ router.post('/', function (req, res, next) {
 
 /**
  * @swagger
- * /races/:name/participants:
+ * /races/{name}/participants:
  *   get:
  *     tags:
  *       - Races
- *     description: Returns patricipants
+ *     description: Returns participants
  *     produces:
  *       - application/json
  *       - text/html
@@ -73,9 +74,13 @@ router.post('/', function (req, res, next) {
  *         type: string
  *     responses:
  *       200:
- *         description: A single race
+ *         description: Array of participants
  *         schema:
- *           $ref: '#/definitions/Race'
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/User'
+ *       400:
+ *         description: Error retrieving participants
  */
 router.get('/', function (req, res) {
 
@@ -97,22 +102,27 @@ router.get('/', function (req, res) {
 
 /**
  * @swagger
- * /races/:name/participants:
+ * /races/{name}/participants:
  *   put:
  *     tags:
  *      - Races
- *     description: Updates patricipants
- *     produces: application/json
+ *     description: Updates participants
+ *     produces:
+ *       - application/json
+ *       - text/html
  *     parameters:
  *       name: participants
  *       in: body
- *       description: list of users
+ *       description: List of users
  *       schema:
- *         type: object
- *         $ref: '#/definitions/Race'
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/User'
  *     responses:
  *       200:
- *         description: Updated race
+ *         description: Updated race participants
+ *       400:
+ *         description: Error updating race participants
  */
 router.put('/', function (req, res) {
     const io = req.app.get('io');
@@ -148,13 +158,14 @@ router.put('/', function (req, res) {
 
 /**
  * @swagger
- * /races/:name/participants:
+ * /races/{name}/participants:
  *   delete:
  *     tags:
  *       - Races
- *     description: Deletes patricipants
+ *     description: Deletes participants
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: race
  *         description: Race's names
@@ -163,7 +174,9 @@ router.put('/', function (req, res) {
  *         type: string
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: Successfully deleted participants
+ *       400:
+ *         description: Error deleting participants
  */
 router.delete('/', function (req, res) {
 
