@@ -158,15 +158,18 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
 
 })
 ;
+
+
 /**
  * @swagger
  * /users/:
  *   post:
  *     tags:
  *       - Users
- *     description: Creates a new local user
+ *     description: Creates a user. (Authorization required)
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: Local User
  *         description: User Creation object
@@ -176,13 +179,18 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *           $ref: '#/definitions/UserCreate'
  *     responses:
  *       200:
- *         description: Successfully created
+ *         description: Success message
+ *         type: object
+ *         properties:
+ *           message:
+ *             type: string
  *       400:
- *         description: An error occurred.
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
-
-
-
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
 
@@ -214,9 +222,10 @@ router.post('/', function (req, res, next) {
 
 });
 
+
 /**
  * @swagger
- * /users/:email:
+ * /users/{email}:
  *   get:
  *     tags:
  *       - Users
@@ -235,6 +244,12 @@ router.post('/', function (req, res, next) {
  *         description: A single user
  *         schema:
  *           $ref: '#/definitions/User'
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/:email', function (req, res) {
     const io = req.app.get('io');
@@ -276,24 +291,42 @@ router.get('/:email', function (req, res) {
 
 });
 
+
 /**
  * @swagger
- * /users/:email:
+ * /users/{email}:
  *   put:
  *     tags:
  *      - Users
  *     description: Updates a single user
- *     produces: application/json
+ *     produces:
+ *       - application/json
+ *       - text/html
  *     parameters:
- *       email: user
- *       in: body
- *       description: Fields for the User resource
- *       schema:
- *         type: object
- *         $ref: '#/definitions/User'
+ *       - name: user
+ *         in: body
+ *         description: Fields for the User resource
+ *         schema:
+ *           type: object
+ *           $ref: '#/definitions/User'
+ *       - name: email
+ *         description: User's email
+ *         in: path
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
  *         description: Updated user
+ *         type: object
+ *         properties:
+ *           message:
+ *             type: string
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.put('/:email', function (req, res) {
     const io = req.app.get('io');
@@ -335,6 +368,7 @@ router.put('/:email', function (req, res) {
  *     description: "Deletes a single user"
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: "email"
  *         description: "User's email"
@@ -344,6 +378,16 @@ router.put('/:email', function (req, res) {
  *     responses:
  *       200:
  *         description: Successfully deleted
+ *         type: object
+ *         properties:
+ *           message:
+ *             type: string
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.delete('/:email', function (req, res) {
     const io = req.app.get('io');
