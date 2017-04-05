@@ -56,8 +56,8 @@ describe('Race', function () {
                     .end((err, res) => {
                         res.should.have.status(200);
                         parser(res.text, function (err, result) {
-                            result.should.have.property('h1');
-                            result.h1.should.not.have.property('div');
+                            result.should.have.property('div');
+                            result.div.should.not.have.property('div');
                             done();
                         });
                     });
@@ -210,8 +210,8 @@ describe('Race', function () {
                                     .end((err, res) => {
                                         res.should.have.status(200);
                                         parser(res.text, function (err, result) {
-                                            result.should.have.property('h1');
-                                            result.h1.should.not.have.property('div');
+                                            result.should.have.property('div');
+                                            result.div.should.not.have.property('div');
                                             done();
                                         });
                                     });

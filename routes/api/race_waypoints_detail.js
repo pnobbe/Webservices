@@ -81,13 +81,15 @@ router.post('/', function (req, res, next) {
  *       200:
  *         description: An array of waypoints
  *         schema:
- *         type: object
- *         properties:
- *           result:
- *             type: array
- *             items:
- *               $ref: '#/definitions/Waypoint'
- *             required: true
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               waypoint:
+ *                 $ref: '#/definitions/Waypoint'
+ *               passed_participants:
+ *                 $ref: '#/definitions/passed_participants'
+ *           required: true
  */
 router.get('/', function (req, res) {
 

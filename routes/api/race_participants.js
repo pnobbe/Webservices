@@ -111,7 +111,7 @@ router.get('/', function (req, res) {
  *       - application/json
  *       - text/html
  *     parameters:
- *       name: participants
+ *     - name: participants
  *       in: body
  *       description: List of users
  *       schema:

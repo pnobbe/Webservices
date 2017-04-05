@@ -5,21 +5,44 @@ const mongoose = require('mongoose');
 const Waypoint = mongoose.model('Waypoint');
 const Regex = require('../../service/regex');
 
+
+/**
+ * @swagger
+ * definitions:
+ *   WaypointCreate:
+ *     properties:
+ *       id:
+ *         type: string
+ *         description: Google Places ID
+ *       name:
+ *         type: string
+ *     required:
+ *      - id
+ *      - name
+ *
+ */
+
+
 /**
  * @swagger
  * definitions:
  *   Waypoint:
  *     properties:
- *       email:
+ *       _id:
+ *         type: string
+ *       id:
  *         type: string
  *       name:
  *         type: string
- *       password:
+ *       address:
  *         type: string
+ *       lat:
+ *         type: number
+ *       lng:
+ *         type: number
  *     required:
- *      - email
+ *      - id
  *      - name
- *      - password
  *
  */
 
@@ -27,34 +50,63 @@ const Regex = require('../../service/regex');
  * @swagger
  * definitions:
  *   passed_participants:
- *     properties:
- *       passed_participants:
- *         type: array
- *         items:
- *           type: object
- *           properties:
- *             user:
- *               $ref: '#/definitions/User'
- *             time:
- *               type: string
- *               format: date
+ *     type: array
+ *     items:
+ *       type: object
+ *       properties:
+ *         user:
+ *           $ref: '#/definitions/User'
+ *         time:
+ *           type: string
+ *           format: date
  */
 
 /**
  * @swagger
- * /waypoints/:
+ * /waypoints/all/{page}/{limit}:
  *   get:
  *     tags:
- *       - Users
- *     description: Returns all users
+ *       - Waypoints
+ *     description: Returns all waypoints. Available filters are id and name
  *     produces:
  *       - application/json
  *       - text/html
+ *     parameters:
+ *       - name: page
+ *         description: pagination return page
+ *         in: path
+ *         required: false
+ *         type: number
+ *       - name: limit
+ *         description: pagination page size
+ *         in: path
+ *         required: false
+ *         type: number
  *     responses:
  *       200:
- *         description: An array of users
+ *         description: An array of waypoints
  *         schema:
- *           $ref: '#/definitions/Waypoint'
+ *         type: object
+ *         properties:
+ *           result:
+ *             type: array
+ *             items:
+ *               $ref: '#/definitions/Waypoint'
+ *             required: true
+ *           page:
+ *             type: number
+ *             required: true
+ *           limit:
+ *             type: number
+ *             required: true
+ *           notice:
+ *             type: string
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/all/:page?/:limit?', function (req, res, next) {
     var page = 1;
@@ -124,21 +176,30 @@ router.get('/all/:page?/:limit?', function (req, res, next) {
  *   post:
  *     tags:
  *       - Waypoints
- *     description: Creates a new waypoint
+ *     description: Creates a waypoint.
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
  *       - name: Waypoint
- *         description: Waypoint object
+ *         description: Waypoint Creation object
  *         in: body
  *         required: true
  *         schema:
- *           $ref: '#/definitions/Waypoint'
+ *           $ref: '#/definitions/WaypointCreate'
  *     responses:
  *       200:
- *         description: Successfully created
+ *         description: Success message
+ *         type: object
+ *         properties:
+ *           message:
+ *             type: string
  *       400:
- *         description: An error occurred.
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.post('/', function (req, res, next) {
     const io = req.app.get('io');
@@ -173,17 +234,17 @@ router.post('/', function (req, res, next) {
 
 /**
  * @swagger
- * /waypoints/:id:
+ * /waypoints/{id}:
  *   get:
  *     tags:
- *       - Waypoints
+ *       - Waypoint
  *     description: Returns a single waypoint
  *     produces:
  *       - application/json
  *       - text/html
  *     parameters:
  *       - name: id
- *         description: Waypoint's id
+ *         description: Google places ID
  *         in: path
  *         required: true
  *         type: string
@@ -192,6 +253,12 @@ router.post('/', function (req, res, next) {
  *         description: A single waypoint
  *         schema:
  *           $ref: '#/definitions/Waypoint'
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/:id', function (req, res) {
     var id;
@@ -235,23 +302,30 @@ router.get('/:id', function (req, res) {
 
 /**
  * @swagger
- * /waypoints/:id:
+ * /waypoints/{id}:
  *   put:
  *     tags:
  *      - Waypoints
  *     description: Updates a single waypoint
  *     produces:
  *      - application/json
+ *      - text/html
  *     parameters:
- *       id: waypoint
+ *       name: id
  *       in: body
  *       description: Fields for the waypoint resource
  *       schema:
  *         type: object
- *         $ref: '#/definitions/Waypoint'
+ *         $ref: '#/definitions/WaypointCreate'
  *     responses:
  *       200:
  *         description: Updated waypoint
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.put('/:id', function (req, res) {
     const io = req.app.get('io');
@@ -286,22 +360,29 @@ router.put('/:id', function (req, res) {
 
 /**
  * @swagger
- * /waypoints/:id:
+ * /waypoints/{id}:
  *   delete:
  *     tags:
  *       - Waypoints
  *     description: Deletes a single waypoint
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - id: waypoint
- *         description: waypoint id
+ *       - name: id
+ *         description: waypoint Google Places id
  *         in: path
  *         required: true
  *         type: string
  *     responses:
  *       200:
  *         description: Successfully deleted
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.delete('/:id', function (req, res) {
     const io = req.app.get('io');
@@ -337,22 +418,33 @@ router.delete('/:id', function (req, res) {
 
 /**
  * @swagger
- * /waypoints/:id:
- *   delete:
+ * /waypoints/search/nearby/{city}:
+ *   get:
  *     tags:
  *       - Waypoints
- *     description: Deletes a single waypoint
+ *     description: Collects nearby places
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - name: waypoint
- *         description: waypoint id
+ *       - name: city
+ *         description: City name (with or without country)
  *         in: path
  *         required: true
  *         type: string
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: An array of waypoints
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/Waypoint'
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/search/nearby/:city', function (req, res) {
     var city;
@@ -391,22 +483,38 @@ router.get('/search/nearby/:city', function (req, res) {
 
 /**
  * @swagger
- * /waypoints/search/nearby/:city/:criteria:
+ * /waypoints/search/nearby/{city}/{criteria}:
  *   get:
  *     tags:
  *       - Waypoints
- *     description: Deletes a single waypoint
+ *     description: Collects nearby places with a certain criteria.
  *     produces:
  *       - application/json
+ *       - text/html
  *     parameters:
- *       - name: waypoint
- *         description: waypoint id
+ *       - name: city
+ *         description: City name (with or without country)
+ *         in: path
+ *         required: true
+ *         type: string
+ *       - name: criteria
+ *         description: search string. examples are Restaurant, Cafe or Hotel
  *         in: path
  *         required: true
  *         type: string
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: An array of waypoints
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/Waypoint'
+ *       400:
+ *         description: An error occured
+ *         type: object
+ *         properties:
+ *           error:
+ *             type: string
  */
 router.get('/search/nearby/:city/:criteria', function (req, res) {
     var city;

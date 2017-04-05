@@ -22,7 +22,7 @@ const session = require('express-session');
 const configDB = require('./config/db');
 const passportSocketIo = require("passport.socketio");
 const MongoStore = require('connect-mongo')(session);
-const socketio = require( "socket.io" );
+const socketio = require("socket.io");
 
 
 const config = require('./config/config');
@@ -116,6 +116,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
+
 const user = new ConnectRoles({
     failureHandler: function (req, res, action) {
         // optional function to customise code that runs when
@@ -136,6 +137,7 @@ const user = new ConnectRoles({
 });
 app.use(user.middleware());
 
+
 user.use(function (req, action) {
     req.session.returnTo = req.path;
     if (!req.isAuthenticated()) return action === 'access home page';
@@ -155,7 +157,9 @@ user.use(function (req) {
     }
 });
 
+
 app.set('user', user);
+
 
 console.log("Done.");
 
@@ -189,8 +193,8 @@ console.log("Done.");
 console.log("Opening sockets... ");
 
 // Socket.io
-var io           = socketio();
-app.io           = io;
+var io = socketio();
+app.io = io;
 
 
 app.use(bodyParser.urlencoded({extended: false}));
