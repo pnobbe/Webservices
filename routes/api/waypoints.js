@@ -30,7 +30,7 @@ const Regex = require('../../service/regex');
  *     tags:
  *       - Users
  *     description: Returns all users
- *     accepts:
+ *     provides:
  *       - application/json
  *       - text/html
  *     responses:
@@ -161,7 +161,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Waypoints
  *     description: Returns a single waypoint
- *     accepts:
+ *     provides:
  *       - application/json
  *       - text/html
  *     parameters:

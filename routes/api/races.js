@@ -22,7 +22,7 @@ const Waypoint = mongoose.model('Waypoint');
  *     tags:
  *       - Races
  *     description: Returns all races
- *     accepts:
+ *     provides:
  *       - application/json
  *       - text/html
  *     responses:
@@ -159,7 +159,7 @@ router.post('/', function (req, res, next) {
  *     tags:
  *       - Races
  *     description: Returns a single race
- *     accepts:
+ *     provides:
  *       - application/json
  *       - text/html
  *     parameters:
