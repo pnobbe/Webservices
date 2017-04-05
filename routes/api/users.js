@@ -64,9 +64,10 @@ const Regex = require('../../service/regex');
  *         required: false
  *         type: number
  *     responses:
- *       "200":
+ *       200:
  *         description: An array of users
- *         type: object
+ *         schema:
+ *           type: object
  *           properties:
  *             result:
  *               type: array
@@ -321,19 +322,19 @@ router.put('/:email', function (req, res) {
 
 /**
  * @swagger
- * /users/:email:
+ * /users/{email}:
  *   delete:
  *     tags:
  *       - Users
- *     description: Deletes a single user
+ *     description: "Deletes a single user"
  *     produces:
  *       - application/json
  *     parameters:
- *       - email: user
- *         description: User's id
- *         in: path
+ *       - name: "email"
+ *         description: "User's email"
+ *         in: "path"
  *         required: true
- *         type: string
+ *         type: "string"
  *     responses:
  *       200:
  *         description: Successfully deleted

@@ -223,7 +223,8 @@ router.get('/:id', function (req, res) {
  *     tags:
  *      - Waypoints
  *     description: Updates a single waypoint
- *     produces: application/json
+ *     produces:
+ *      - application/json
  *     parameters:
  *       id: waypoint
  *       in: body
@@ -327,7 +328,7 @@ router.delete('/:id', function (req, res) {
  *     produces:
  *       - application/json
  *     parameters:
- *       - id: waypoint
+ *       - name: waypoint
  *         description: waypoint id
  *         in: path
  *         required: true
@@ -381,7 +382,7 @@ router.get('/search/nearby/:city', function (req, res) {
  *     produces:
  *       - application/json
  *     parameters:
- *       - id: waypoint
+ *       - name: waypoint
  *         description: waypoint id
  *         in: path
  *         required: true
