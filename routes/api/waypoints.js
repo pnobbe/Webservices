@@ -222,8 +222,8 @@ router.post('/', function (req, res, next) {
  * /waypoints/{id}:
  *   get:
  *     tags:
- *       - Users
- *     description: Returns a single user
+ *       - Waypoint
+ *     description: Returns a single waypoint
  *     produces:
  *       - application/json
  *       - text/html
