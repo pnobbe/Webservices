@@ -172,21 +172,19 @@ waypointSchema.statics.printHTML = function (data) {
         resp += "</div>";
         return resp;
     }
-    else {
-        var resp = "<div>";
-        resp += "<h3>" + data.waypoint._id + "</h3>";
-        resp += "<h3>" + data.waypoint.name + "</h3>";
-        resp += "<h2>" + data.waypoint.id + "</h2>";
-
-        if (data.lat) {
-            resp += "<h3>" + data.address + "</h3>";
-            resp += "<h4 class='LAT'>" + data.lat + "</h4>";
-            resp += "<h4 class='LNG'>" + data.lng + "</h4>";
+    else if (data.waypoint) {
+        if (data.waypoint instanceof Waypoint) {
+            var resp = "<div>";
+            resp += "<h3>" + data.waypoint._id + "</h3>";
+            resp += "<h3>" + data.waypoint.name + "</h3>";
+            resp += "<h2>" + data.waypoint.id + "</h2>";
+            resp += "</div>";
+            return resp;
         }
-        resp += "</div>";
-
-        return resp;
     }
+    return data;
+
+
 };
 
 const Waypoint = mongoose.model('Waypoint', waypointSchema);

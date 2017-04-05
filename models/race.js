@@ -249,11 +249,11 @@ raceSchema.statics.printHTMLParticipants = function (data) {
     if (data.participants != null && data.participants.length > 0) {
         resp += "<div>";
         data.participants.forEach(el => {
-            resp = User.printJSON(el)
+            resp += User.printJSON(el)
         });
         resp += "</div>";
     }
-    resp = "</div>";
+    resp += "</div>";
     return resp;
 };
 
